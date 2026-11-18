@@ -10,10 +10,7 @@ import type { ChartTheme } from './chartTheme'
  * Build the fault Pareto: descending bars on the left axis, cumulative percent
  * on the right axis, and an 80% markLine showing where the vital few end.
  */
-export function buildParetoOption(
-  data: ParetoResponse,
-  theme: ChartTheme,
-): EChartsOption {
+export function buildParetoOption(data: ParetoResponse, theme: ChartTheme): EChartsOption {
   const palette = chartPalette(theme)
   const codes = data.rows.map((row) => row.fault_code)
   const counts = data.rows.map((row) => row.count)

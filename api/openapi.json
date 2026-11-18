@@ -396,6 +396,17 @@
             ],
             "title": "From Date"
           },
+          "metric": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metric"
+          },
           "shifts": {
             "items": {
               "type": "string"

@@ -13,12 +13,7 @@ export const DEFAULT_FILTERS: FilterState = {
 }
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/
-const METRICS: Metric[] = [
-  'throughput_wph',
-  'yield_pct',
-  'wafers_processed',
-  'availability_pct',
-]
+const METRICS: Metric[] = ['throughput_wph', 'yield_pct', 'wafers_processed', 'availability_pct']
 const SHIFTS: ShiftCode[] = ['A', 'B', 'C']
 
 function parseDate(value: string | null): string | null {
@@ -104,10 +99,10 @@ export function useFilterState(): UseFilterState {
     setSearchParams(new URLSearchParams(), { replace: false })
   }, [setSearchParams])
 
-  const shareUrl = useMemo(() => {
-    if (typeof window === 'undefined') return ''
-    return `${window.location.origin}${window.location.pathname}${window.location.search}`
-  }, [searchParams])
+  const shareUrl =
+    typeof window === 'undefined'
+      ? ''
+      : `${window.location.origin}${window.location.pathname}${window.location.search}`
 
   return { filters, setFilters, resetFilters, shareUrl }
 }

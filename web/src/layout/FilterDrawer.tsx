@@ -30,7 +30,7 @@ interface FilterDrawerProps {
   onClose: () => void
   filters: FilterState
   meta: FilterOptionsResponse | null
-  onApply: (values: FilterFormValues) => void
+  onApply: (next: Partial<FilterState>) => void
   onReset: () => void
 }
 
@@ -74,7 +74,16 @@ export default function FilterDrawer({
   }, [filters, form, open])
 
   const handleFinish = (values: FilterFormValues) => {
-    onApply(values)
+    const [start, end] = values.range ?? []
+    onApply({
+      from_date: start ? start.format('YYYY-MM-DD') : null,
+      to_date: end ? end.format('YYYY-MM-DD') : null,
+      tool_ids: values.tool_ids ?? [],
+      tool_family: values.tool_family ?? null,
+      fab_site: values.fab_site ?? null,
+      shifts: values.shifts ?? [],
+      metric: values.metric,
+    })
     onClose()
   }
 
@@ -85,7 +94,13 @@ export default function FilterDrawer({
   }
 
   return (
-    <Drawer title="Filter telemetry" open={open} onClose={onClose} width="min(420px, 100vw)" destroyOnClose={false}>
+    <Drawer
+      title="Filter telemetry"
+      open={open}
+      onClose={onClose}
+      width="min(420px, 100vw)"
+      destroyOnClose={false}
+    >
       <Form<FilterFormValues>
         form={form}
         layout="vertical"
@@ -104,8 +119,8 @@ export default function FilterDrawer({
         </Form.Item>
         {meta?.date_bounds.min_date && meta?.date_bounds.max_date ? (
           <Typography.Paragraph type="secondary" style={{ marginTop: -12, fontSize: 12 }}>
-            Available data: {meta.date_bounds.min_date} → {meta.date_bounds.max_date}.
-            Leave empty for the full window.
+            Available data: {meta.date_bounds.min_date} → {meta.date_bounds.max_date}. Leave empty
+            for the full window.
           </Typography.Paragraph>
         ) : null}
 

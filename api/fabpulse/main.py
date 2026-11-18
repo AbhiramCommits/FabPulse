@@ -87,7 +87,7 @@ class FilterParams(BaseModel):
 
     def echo(self) -> FilterEcho:
         """Return the normalised filter echo used in responses."""
-        return FilterEcho(**self.to_filters().as_dict())
+        return FilterEcho(**self.to_filters().as_dict(), metric=self.metric)
 
 
 def _split_values(values: list[str] | None) -> list[str]:

@@ -4,11 +4,7 @@
  * machine-readable reference; these interfaces add ergonomic names for the UI.
  */
 
-export type Metric =
-  | 'throughput_wph'
-  | 'yield_pct'
-  | 'wafers_processed'
-  | 'availability_pct'
+export type Metric = 'throughput_wph' | 'yield_pct' | 'wafers_processed' | 'availability_pct'
 
 export type ShiftCode = 'A' | 'B' | 'C'
 
@@ -29,6 +25,7 @@ export interface FilterEcho {
   tool_family: string | null
   fab_site: string | null
   shifts: string[]
+  metric?: Metric | null
 }
 
 export interface HealthResponse {

@@ -1,4 +1,9 @@
-import { ArrowDownOutlined, ArrowUpOutlined, InfoCircleOutlined, MinusOutlined } from '@ant-design/icons'
+import {
+  ArrowDownOutlined,
+  ArrowUpOutlined,
+  InfoCircleOutlined,
+  MinusOutlined,
+} from '@ant-design/icons'
 import { Card, Statistic, Tooltip, Typography } from 'antd'
 import type { ReactNode } from 'react'
 

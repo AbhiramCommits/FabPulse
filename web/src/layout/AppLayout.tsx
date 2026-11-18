@@ -28,7 +28,7 @@ import type { FilterState } from '../api/types'
 import AppBreadcrumbs from '../components/AppBreadcrumbs'
 import { useMeta } from '../hooks/useData'
 import { useFilterState } from '../hooks/useFilterState'
-import FilterDrawer, { type FilterFormValues } from './FilterDrawer'
+import FilterDrawer from './FilterDrawer'
 import { useTheme } from './ThemeProvider'
 
 const { Header, Sider, Content, Footer } = Layout
@@ -84,19 +84,6 @@ export default function AppLayout() {
     if (location.pathname.startsWith('/report')) return '/report'
     return '/'
   }, [location.pathname])
-
-  const onApply = (values: FilterFormValues) => {
-    const [start, end] = values.range ?? []
-    setFilters({
-      from_date: start ? start.format('YYYY-MM-DD') : null,
-      to_date: end ? end.format('YYYY-MM-DD') : null,
-      tool_ids: values.tool_ids ?? [],
-      tool_family: values.tool_family ?? null,
-      fab_site: values.fab_site ?? null,
-      shifts: values.shifts ?? [],
-      metric: values.metric,
-    })
-  }
 
   const handleCopyLink = async () => {
     const copied = await copyToClipboard(window.location.href)
@@ -203,11 +190,7 @@ export default function AppLayout() {
           <div style={{ flex: 1 }} />
           <Space size={4}>
             <Tooltip title="Copy a link to this exact view">
-              <Button
-                icon={<CopyOutlined />}
-                onClick={handleCopyLink}
-                aria-label="Copy link"
-              >
+              <Button icon={<CopyOutlined />} onClick={handleCopyLink} aria-label="Copy link">
                 {screens.sm ? 'Copy link' : null}
               </Button>
             </Tooltip>
@@ -254,7 +237,7 @@ export default function AppLayout() {
         onClose={() => setDrawerOpen(false)}
         filters={filters}
         meta={meta.data}
-        onApply={onApply}
+        onApply={setFilters}
         onReset={resetFilters}
       />
     </Layout>

@@ -29,6 +29,11 @@ class ResizeObserverMock {
 }
 vi.stubGlobal('ResizeObserver', ResizeObserverMock)
 
+// jsdom's getComputedStyle throws for pseudo-elements used by rc-util's
+// scrollbar measurement; the real value is irrelevant in tests.
+const getComputedStyle = window.getComputedStyle.bind(window)
+window.getComputedStyle = (element: Element) => getComputedStyle(element)
+
 window.HTMLElement.prototype.scrollIntoView = vi.fn()
 Object.defineProperty(window.SVGElement.prototype, 'getBBox', {
   writable: true,

@@ -318,6 +318,65 @@ def control_limits(
     return result
 
 
+def distribution_summary(values: Iterable[float]) -> dict[str, Any]:
+    """Summarise a distribution with five-number statistics and IQR fences.
+
+    This is a pure function so the percentile/outlier maths can be tested on a
+    known array without touching the warehouse.
+
+    Args:
+        values: Numeric observations (NaNs are ignored).
+
+    Returns:
+        Dict with count, min, p5, q1, median, q3, p95, max, mean, std, iqr,
+        lower_fence and upper_fence.
+
+    Raises:
+        ValueError: When no finite observations are supplied.
+    """
+    array = np.asarray(
+        [float(value) for value in values if value is not None and not pd.isna(value)],
+        dtype=float,
+    )
+    if array.size == 0:
+        raise ValueError("distribution_summary requires at least one value")
+    percentiles = np.percentile(array, [5, 25, 50, 75, 95])
+    q1, median, q3 = float(percentiles[1]), float(percentiles[2]), float(percentiles[3])
+    iqr = q3 - q1
+    return {
+        "count": int(array.size),
+        "min": round(float(array.min()), 4),
+        "p5": round(float(percentiles[0]), 4),
+        "q1": round(q1, 4),
+        "median": round(median, 4),
+        "q3": round(q3, 4),
+        "p95": round(float(percentiles[4]), 4),
+        "max": round(float(array.max()), 4),
+        "mean": round(float(array.mean()), 4),
+        "std": round(float(array.std(ddof=1)) if array.size > 1 else 0.0, 4),
+        "iqr": round(iqr, 4),
+        "lower_fence": round(q1 - 1.5 * iqr, 4),
+        "upper_fence": round(q3 + 1.5 * iqr, 4),
+    }
+
+
+def tukey_outliers(
+    values: Iterable[float], dates: Sequence[Any] | None = None
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Return a distribution summary and its Tukey 1.5×IQR outliers."""
+    clean = [
+        (date_value, float(value))
+        for date_value, value in zip(dates or (), values)
+        if value is not None and not pd.isna(value)
+    ]
+    summary = distribution_summary([value for _, value in clean])
+    outliers = []
+    for date_value, value in clean:
+        if value < summary["lower_fence"] or value > summary["upper_fence"]:
+            outliers.append({"date": _iso(date_value), "value": round(value, 4)})
+    return summary, outliers
+
+
 def percentiles_outliers(
     metric: str = "throughput_wph",
     filters: Filters | Mapping[str, Any] | None = None,
@@ -342,34 +401,19 @@ def percentiles_outliers(
         return {"metric": metric, "tools": [], "fleet": None, "total_outliers": 0}
 
     def summarize(values: np.ndarray, group: pd.DataFrame | None = None) -> dict[str, Any]:
-        percentiles = np.percentile(values, [5, 25, 50, 75, 95])
-        q1, median, q3 = float(percentiles[1]), float(percentiles[2]), float(percentiles[3])
-        iqr = q3 - q1
-        lower, upper = q1 - 1.5 * iqr, q3 + 1.5 * iqr
+        summary = distribution_summary(values)
         outliers: list[dict[str, Any]] = []
         if group is not None:
             for row in group.itertuples(index=False):
                 if pd.isna(row.value):
                     continue
-                if row.value < lower or row.value > upper:
+                if row.value < summary["lower_fence"] or row.value > summary["upper_fence"]:
                     entry = {"date": _iso(row.date), "value": round(float(row.value), 4)}
                     if hasattr(row, "tool_id"):
                         entry["tool_id"] = row.tool_id
                     outliers.append(entry)
         return {
-            "count": int(len(values)),
-            "min": round(float(values.min()), 4),
-            "p5": round(float(percentiles[0]), 4),
-            "q1": round(q1, 4),
-            "median": round(median, 4),
-            "q3": round(q3, 4),
-            "p95": round(float(percentiles[4]), 4),
-            "max": round(float(values.max()), 4),
-            "mean": round(float(values.mean()), 4),
-            "std": round(float(values.std(ddof=1)) if len(values) > 1 else 0.0, 4),
-            "iqr": round(iqr, 4),
-            "lower_fence": round(lower, 4),
-            "upper_fence": round(upper, 4),
+            **summary,
             "outliers": sorted(outliers, key=lambda item: abs(item["value"]), reverse=True),
         }
 

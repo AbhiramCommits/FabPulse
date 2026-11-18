@@ -13,10 +13,7 @@ import type { ChartTheme } from './chartTheme'
  * Kept pure and exported so Vitest can assert the control-limit values and
  * theme-dependent colours without mounting ECharts.
  */
-export function buildTrendOption(
-  data: TimeSeriesResponse,
-  theme: ChartTheme,
-): EChartsOption {
+export function buildTrendOption(data: TimeSeriesResponse, theme: ChartTheme): EChartsOption {
   const palette = chartPalette(theme)
   const dates = data.series.map((point) => point.date)
   const values = data.series.map((point) => point.value)
@@ -148,12 +145,7 @@ export function buildTrendOption(
           ? {
               silent: true,
               itemStyle: { color: palette.band },
-              data: [
-                [
-                  { yAxis: data.lcl as number },
-                  { yAxis: data.ucl as number },
-                ],
-              ],
+              data: [[{ yAxis: data.lcl as number }, { yAxis: data.ucl as number }]],
             }
           : undefined,
         markPoint: violations.length
@@ -184,10 +176,7 @@ export function buildTrendOption(
  * Category axes report indices in some ECharts versions and dates in others;
  * both are handled and out-of-range values clamp to the series extent.
  */
-export function brushRangeToDates(
-  range: unknown,
-  dates: string[],
-): [string, string] | null {
+export function brushRangeToDates(range: unknown, dates: string[]): [string, string] | null {
   if (!Array.isArray(range) || range.length < 2 || dates.length === 0) return null
   const [start, end] = range as [unknown, unknown]
   let fromIndex: number

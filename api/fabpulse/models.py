@@ -79,6 +79,7 @@ class FilterEcho(BaseModel):
     tool_family: str | None = None
     fab_site: str | None = None
     shifts: list[str] = Field(default_factory=list)
+    metric: str | None = None
 
 
 class FleetKpi(BaseModel):

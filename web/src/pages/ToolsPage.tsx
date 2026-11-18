@@ -165,13 +165,18 @@ export default function ToolsPage() {
           Tool fleet
         </Typography.Title>
         <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
-          Sort any column, use the column filters, or click a row to drill into the tool
-          timeline. Paging, sorting and filtering all run on the API.
+          Sort any column, use the column filters, or click a row to drill into the tool timeline.
+          Paging, sorting and filtering all run on the API.
         </Typography.Paragraph>
       </div>
 
       {kpis.error ? (
-        <Alert type="error" showIcon message="Could not load tool KPIs" description={kpis.error.message} />
+        <Alert
+          type="error"
+          showIcon
+          message="Could not load tool KPIs"
+          description={kpis.error.message}
+        />
       ) : (
         <Table<ToolKpi>
           rowKey="tool_id"

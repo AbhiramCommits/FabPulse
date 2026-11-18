@@ -6,6 +6,8 @@ PY ?= $(shell if [ -x "$(ROOT)/.venv/bin/python" ]; then echo "$(ROOT)/.venv/bin
 NPM ?= npm
 UVICORN_PORT ?= 8000
 FABPULSE_URL ?= http://127.0.0.1:$(UVICORN_PORT)
+CI_RAW := data/ci-raw
+CI_DB ?= sqlite:///$(ROOT)/data/fabpulse_ci.db
 
 .PHONY: setup gen ingest api web test python-test web-test ci lint schema snapshot report clean
 
@@ -35,13 +37,20 @@ python-test: ## Run pytest with coverage
 web-test: ## Run vitest with coverage
 	cd web && $(NPM) run test -- --run --coverage
 
-ci: ## Reproduce CI locally (python + web jobs)
-	$(PY) data/generate.py --out data/raw --days 20 --seed 7
+ci: ## Reproduce the GitHub Actions pipeline locally
+	mkdir -p $(CI_RAW)
+	$(PY) data/generate.py --out $(CI_RAW) --days 20 --seed 7
+	cd api && FABPULSE_DATABASE_URL="$(CI_DB)" $(PY) -m fabpulse.ingest --src ../$(CI_RAW) --truncate
 	cd api && $(PY) -m pytest --cov=fabpulse --cov-report=term-missing --cov-fail-under=0
+	cd api && $(PY) -m coverage report --include="fabpulse/stats.py,fabpulse/ingest.py" --fail-under=85
 	cd web && $(NPM) run typecheck
 	cd web && $(NPM) run lint
 	cd web && $(NPM) run test -- --run --coverage
 	cd web && $(NPM) run build
+
+lint: ## Lint the frontend and check formatting
+	cd web && $(NPM) run lint
+	cd web && $(NPM) run format
 
 schema: ## Write the Postgres DDL to scripts/schema.sql
 	cd api && $(PY) -m fabpulse.schema --out ../scripts/schema.sql

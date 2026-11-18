@@ -23,12 +23,7 @@ import type {
 export const API_BASE = (import.meta.env.VITE_API_BASE as string | undefined) ?? ''
 
 export type QueryValue =
-  | string
-  | number
-  | boolean
-  | null
-  | undefined
-  | ReadonlyArray<string | number>
+  string | number | boolean | null | undefined | ReadonlyArray<string | number>
 
 export class ApiError extends Error {
   readonly status: number
@@ -119,11 +114,7 @@ export const api = {
   filterOptions: (signal?: AbortSignal) =>
     apiGet<FilterOptionsResponse>('/api/meta/filters', { signal }),
 
-  kpis: (
-    filters: FilterState,
-    options: KpiOptions = {},
-    signal?: AbortSignal,
-  ) =>
+  kpis: (filters: FilterState, options: KpiOptions = {}, signal?: AbortSignal) =>
     apiGet<KpisResponse>('/api/kpis', {
       params: {
         ...filterParams(filters),
@@ -135,11 +126,7 @@ export const api = {
       signal,
     }),
 
-  timeseries: (
-    filters: FilterState,
-    options: TimeSeriesOptions = {},
-    signal?: AbortSignal,
-  ) =>
+  timeseries: (filters: FilterState, options: TimeSeriesOptions = {}, signal?: AbortSignal) =>
     apiGet<TimeSeriesResponse>('/api/timeseries', {
       params: {
         ...filterParams(filters),

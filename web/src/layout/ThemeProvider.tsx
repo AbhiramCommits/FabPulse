@@ -53,8 +53,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
           colorPrimary: '#0f9e8c',
           colorInfo: '#0f9e8c',
           borderRadius: 8,
-          fontFamily:
-            "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         },
       }}
     >

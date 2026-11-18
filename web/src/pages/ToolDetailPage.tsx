@@ -1,16 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import {
-  Alert,
-  Card,
-  Col,
-  Result,
-  Row,
-  Space,
-  Statistic,
-  Table,
-  Tag,
-  Typography,
-} from 'antd'
+import { Alert, Card, Col, Result, Row, Space, Statistic, Table, Tag, Typography } from 'antd'
 import type { ColumnsType, TableProps } from 'antd/es/table'
 import { Link, useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
@@ -20,12 +9,7 @@ import MetricStatCard from '../components/MetricStatCard'
 import StateTag from '../components/StateTag'
 import { TrendChart, metricLabel } from '../charts'
 import { METRIC_DEFINITIONS } from '../constants/metricDefinitions'
-import {
-  useKpis,
-  useShiftDeltas,
-  useTimeseries,
-  useToolEvents,
-} from '../hooks/useData'
+import { useKpis, useShiftDeltas, useTimeseries, useToolEvents } from '../hooks/useData'
 import { filtersKey, useFilterState } from '../hooks/useFilterState'
 
 function fmtP(pValue: number | null): string {
@@ -56,14 +40,7 @@ export default function ToolDetailPage() {
   const [eventPageSize, setEventPageSize] = useState(10)
   const [eventSortBy, setEventSortBy] = useState('ts')
   const [eventSortDir, setEventSortDir] = useState<'asc' | 'desc'>('desc')
-  const events = useToolEvents(
-    toolId,
-    filters,
-    eventPage,
-    eventPageSize,
-    eventSortBy,
-    eventSortDir,
-  )
+  const events = useToolEvents(toolId, filters, eventPage, eventPageSize, eventSortBy, eventSortDir)
   const signature = filtersKey(filters)
 
   useEffect(() => {
@@ -131,11 +108,7 @@ export default function ToolDetailPage() {
     [],
   )
 
-  const onEventChange: TableProps<EventRow>['onChange'] = (
-    pagination,
-    _tableFilters,
-    sorter,
-  ) => {
+  const onEventChange: TableProps<EventRow>['onChange'] = (pagination, _tableFilters, sorter) => {
     setEventPage(pagination.current ?? 1)
     setEventPageSize(pagination.pageSize ?? 10)
     const activeSorter = Array.isArray(sorter) ? sorter[0] : sorter
@@ -191,11 +164,7 @@ export default function ToolDetailPage() {
       title: 'Verdict',
       key: 'significant',
       render: (_value, row) =>
-        row.significant ? (
-          <Tag color="red">significant</Tag>
-        ) : (
-          <Tag>not significant</Tag>
-        ),
+        row.significant ? <Tag color="red">significant</Tag> : <Tag>not significant</Tag>,
     },
   ]
 
@@ -288,7 +257,12 @@ export default function ToolDetailPage() {
       </Row>
 
       {kpis.error ? (
-        <Alert type="error" showIcon message="Could not load tool KPIs" description={kpis.error.message} />
+        <Alert
+          type="error"
+          showIcon
+          message="Could not load tool KPIs"
+          description={kpis.error.message}
+        />
       ) : null}
 
       <ChartCard

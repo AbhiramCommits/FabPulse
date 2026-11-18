@@ -32,16 +32,19 @@ const excursionColumns: ColumnsType<Excursion> = [
     dataIndex: 'metric',
     width: 120,
     render: (value: string) =>
-      ({ throughput_wph: 'Throughput', yield_pct: 'Yield', wafers_processed: 'Wafers', availability_pct: 'Availability' })[value] ?? value,
+      ({
+        throughput_wph: 'Throughput',
+        yield_pct: 'Yield',
+        wafers_processed: 'Wafers',
+        availability_pct: 'Availability',
+      })[value] ?? value,
   },
   {
     title: 'Severity',
     dataIndex: 'severity',
     width: 100,
     render: (value: string) => (
-      <Tag color={value === 'CRITICAL' ? 'red' : value === 'HIGH' ? 'orange' : 'gold'}>
-        {value}
-      </Tag>
+      <Tag color={value === 'CRITICAL' ? 'red' : value === 'HIGH' ? 'orange' : 'gold'}>{value}</Tag>
     ),
   },
   {
@@ -139,7 +142,10 @@ export default function ReportPage() {
       <Row gutter={[12, 12]}>
         {data.headline.map((item) => (
           <Col xs={12} sm={8} xl={4} key={item.label}>
-            <Card size="small" title={<Typography.Text type="secondary">{item.label}</Typography.Text>}>
+            <Card
+              size="small"
+              title={<Typography.Text type="secondary">{item.label}</Typography.Text>}
+            >
               <Statistic value={item.value} valueStyle={{ fontSize: 22 }} />
               <Typography.Text type="secondary" style={{ fontSize: 11 }}>
                 {item.detail}
@@ -205,7 +211,11 @@ export default function ReportPage() {
           items={[
             { key: 'tools', label: 'Tools', children: data.counts.tools ?? 0 },
             { key: 'days', label: 'Operational days', children: data.counts.days ?? 0 },
-            { key: 'events', label: 'Events', children: (data.counts.events ?? 0).toLocaleString() },
+            {
+              key: 'events',
+              label: 'Events',
+              children: (data.counts.events ?? 0).toLocaleString(),
+            },
             {
               key: 'faults',
               label: 'Fault events',

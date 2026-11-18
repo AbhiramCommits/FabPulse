@@ -52,13 +52,7 @@ export default function ChartCard({
   )
 }
 
-export function InlineError({
-  error,
-  onRetry,
-}: {
-  error: Error
-  onRetry?: () => void
-}) {
+export function InlineError({ error, onRetry }: { error: Error; onRetry?: () => void }) {
   return (
     <Alert
       type="error"

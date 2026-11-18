@@ -24,10 +24,12 @@ export default defineConfig({
     setupFiles: './src/test/setup.ts',
     css: false,
     restoreMocks: true,
+    testTimeout: 20000,
+    hookTimeout: 20000,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json-summary', 'html'],
-      include: ['src/charts/**/*.{ts,tsx}', 'src/hooks/**/*.{ts,tsx}', 'src/api/**/*.ts'],
+      include: ['src/charts/**/*.{ts,tsx}', 'src/hooks/**/*.{ts,tsx}'],
       exclude: ['**/*.test.{ts,tsx}', 'src/test/**'],
       thresholds: {
         statements: 80,

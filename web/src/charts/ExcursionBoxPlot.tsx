@@ -10,19 +10,10 @@ import type { ChartTheme } from './chartTheme'
  * Build the per-tool box plot from five-number summaries plus a scatter series
  * of Tukey 1.5×IQR outliers (each labelled with its observation date).
  */
-export function buildBoxplotOption(
-  data: BoxplotResponse,
-  theme: ChartTheme,
-): EChartsOption {
+export function buildBoxplotOption(data: BoxplotResponse, theme: ChartTheme): EChartsOption {
   const palette = chartPalette(theme)
   const tools = data.tools.map((tool) => tool.tool_id)
-  const boxes = data.tools.map((tool) => [
-    tool.min,
-    tool.q1,
-    tool.median,
-    tool.q3,
-    tool.max,
-  ])
+  const boxes = data.tools.map((tool) => [tool.min, tool.q1, tool.median, tool.q3, tool.max])
   const outliers = data.tools.flatMap((tool, toolIndex) =>
     tool.outliers.map((outlier) => ({
       value: [toolIndex, outlier.value],
@@ -39,7 +30,12 @@ export function buildBoxplotOption(
       trigger: 'item',
       ...tooltipStyle(palette),
       formatter: (params: unknown) => {
-        const item = params as { seriesType?: string; value?: unknown; name?: string; tool?: string }
+        const item = params as {
+          seriesType?: string
+          value?: unknown
+          name?: string
+          tool?: string
+        }
         if (item.seriesType === 'scatter') {
           const value = item.value as [number, number]
           return `${tools[value[0]] ?? item.tool}<br/>outlier ${value[1].toFixed(2)}<br/>${item.name ?? ''}`

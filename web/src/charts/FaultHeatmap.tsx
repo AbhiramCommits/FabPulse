@@ -88,10 +88,7 @@ export interface FaultHeatmapProps {
 /** Thin ECharts wrapper for the fault heatmap. */
 export default function FaultHeatmap({ data, mode = 'shift', height = 420 }: FaultHeatmapProps) {
   const { mode: themeMode } = useTheme()
-  const option = useMemo(
-    () => buildHeatmapOption(data, themeMode, mode),
-    [data, themeMode, mode],
-  )
+  const option = useMemo(() => buildHeatmapOption(data, themeMode, mode), [data, themeMode, mode])
   return (
     <ReactECharts
       key={`${themeMode}-${mode}`}

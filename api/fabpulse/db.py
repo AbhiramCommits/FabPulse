@@ -86,29 +86,36 @@ def get_metadata():
     return metadata
 
 
-def create_all(url: str | None = None) -> None:
+def as_engine(url_or_engine: str | Engine | None = None) -> Engine:
+    """Return *url_or_engine* as an Engine, creating/caching one when needed."""
+    if isinstance(url_or_engine, Engine):
+        return url_or_engine
+    return get_engine(url_or_engine)
+
+
+def create_all(url_or_engine: str | Engine | None = None) -> None:
     """Create every warehouse table and index that does not exist yet."""
     from .schema import metadata
 
-    metadata.create_all(get_engine(url))
+    metadata.create_all(as_engine(url_or_engine))
 
 
-def drop_all(url: str | None = None) -> None:
+def drop_all(url_or_engine: str | Engine | None = None) -> None:
     """Drop every warehouse table (used by tests and ``--truncate``)."""
     from .schema import metadata
 
-    metadata.drop_all(get_engine(url))
+    metadata.drop_all(as_engine(url_or_engine))
 
 
-def table_names(url: str | None = None) -> list[str]:
+def table_names(url_or_engine: str | Engine | None = None) -> list[str]:
     """Return the names of the tables currently present in the warehouse."""
-    return sorted(inspect(get_engine(url)).get_table_names())
+    return sorted(inspect(as_engine(url_or_engine)).get_table_names())
 
 
-def ping(url: str | None = None) -> bool:
+def ping(url_or_engine: str | Engine | None = None) -> bool:
     """Return ``True`` when the warehouse answers a trivial query."""
     try:
-        with get_engine(url).connect() as conn:
+        with as_engine(url_or_engine).connect() as conn:
             conn.execute(text("SELECT 1"))
         return True
     except Exception:  # pragma: no cover - depends on the host

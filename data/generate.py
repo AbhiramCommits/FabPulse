@@ -78,6 +78,8 @@ RECIPES = {
 DEGRADED_TOOLS = {"SCANNER-03": 0.26, "TRACK-02": 0.20, "METRO-04": 0.15}
 #: Yield excursion window (day indices) and magnitude on SCANNER-02.
 YIELD_EXCURSION = {"tool": "SCANNER-02", "start_day": 62, "end_day": 70, "drop": 6.2}
+#: A step-change throughput excursion on TRACK-04 (chamber fault, days 72-78).
+THROUGHPUT_EXCURSION = {"tool": "TRACK-04", "start_day": 72, "end_day": 78, "drop": 0.30}
 BAD_TIMESTAMP_SAMPLES = ("not-a-date", "", "2026-13-45T99:99:99Z")
 DIRTY_FRACTION = 0.005
 
@@ -164,8 +166,8 @@ def simulate_day_states(
             start, stop = _block(rng, 288, 4, 20)
         states[start:stop] = "UNSCHEDULED_DOWN"
 
-    # Engineering / qualification runs: short, roughly every other day.
-    if rng.random() < 0.48:
+    # Engineering / qualification runs: short, roughly every third day.
+    if rng.random() < 0.34:
         start, stop = _block(rng, 288, 3, 12)
         states[start:stop] = "ENGINEERING"
 
@@ -252,11 +254,22 @@ def generate_events(
             shift_labels == "A", 1.02, np.where(shift_labels == "B", 1.00, 0.94)
         )
         noise = rng.normal(1.0, 0.035, size=len(states)).clip(0.75, 1.25)
+        excursion_factor = np.ones(len(states))
+        if tool.tool_id == THROUGHPUT_EXCURSION["tool"]:
+            in_window = np.repeat(
+                [
+                    THROUGHPUT_EXCURSION["start_day"] <= d <= THROUGHPUT_EXCURSION["end_day"]
+                    for d in range(days)
+                ],
+                288,
+            )
+            excursion_factor[in_window] = 1.0 - THROUGHPUT_EXCURSION["drop"]
         throughput = (
             tool.base_throughput
             * trend_per_interval
             * shift_modifier
             * noise
+            * excursion_factor
             * productive
         ).round(2)
         wafers = np.round(throughput * interval_s / 3600).astype(int)
@@ -285,10 +298,15 @@ def generate_events(
             )
         engineering_positions = np.flatnonzero(states == "ENGINEERING")
         if len(engineering_positions):
-            weights = np.where(np.isin(FAULT_CODES, ["RECIPE_MISMATCH", "CAL_DRIFT"]), 0.12, 0.01)
-            weights = weights / weights.sum()
-            picks = rng.choice(len(FAULT_CODES), size=len(engineering_positions), p=weights)
-            fault_codes[engineering_positions] = np.array(FAULT_CODES, dtype=object)[picks]
+            engineering_with_fault = rng.choice(
+                engineering_positions,
+                size=int(len(engineering_positions) * 0.25),
+                replace=False,
+            )
+            fault_codes[engineering_with_fault] = rng.choice(
+                ["RECIPE_MISMATCH", "CAL_DRIFT", "SENSOR_NOISE"],
+                size=len(engineering_with_fault),
+            )
         productive_positions = np.flatnonzero(productive)
         minor_positions = rng.choice(
             productive_positions, size=int(len(productive_positions) * 0.004), replace=False

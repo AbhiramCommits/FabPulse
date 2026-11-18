@@ -1,0 +1,3218 @@
+{
+  "components": {
+    "schemas": {
+      "BoxSummary": {
+        "description": "Five-number summary plus tails, IQR fences and outliers.",
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "iqr": {
+            "title": "Iqr",
+            "type": "number"
+          },
+          "lower_fence": {
+            "title": "Lower Fence",
+            "type": "number"
+          },
+          "max": {
+            "title": "Max",
+            "type": "number"
+          },
+          "mean": {
+            "title": "Mean",
+            "type": "number"
+          },
+          "median": {
+            "title": "Median",
+            "type": "number"
+          },
+          "min": {
+            "title": "Min",
+            "type": "number"
+          },
+          "outliers": {
+            "items": {
+              "$ref": "#/components/schemas/BoxplotOutlier"
+            },
+            "title": "Outliers",
+            "type": "array"
+          },
+          "p5": {
+            "title": "P5",
+            "type": "number"
+          },
+          "p95": {
+            "title": "P95",
+            "type": "number"
+          },
+          "q1": {
+            "title": "Q1",
+            "type": "number"
+          },
+          "q3": {
+            "title": "Q3",
+            "type": "number"
+          },
+          "std": {
+            "title": "Std",
+            "type": "number"
+          },
+          "upper_fence": {
+            "title": "Upper Fence",
+            "type": "number"
+          }
+        },
+        "required": [
+          "count",
+          "min",
+          "p5",
+          "q1",
+          "median",
+          "q3",
+          "p95",
+          "max",
+          "mean",
+          "std",
+          "iqr",
+          "lower_fence",
+          "upper_fence",
+          "outliers"
+        ],
+        "title": "BoxSummary",
+        "type": "object"
+      },
+      "BoxplotOutlier": {
+        "description": "A single Tukey outlier with its observation date.",
+        "properties": {
+          "date": {
+            "title": "Date",
+            "type": "string"
+          },
+          "tool_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Id"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "date",
+          "value"
+        ],
+        "title": "BoxplotOutlier",
+        "type": "object"
+      },
+      "BoxplotResponse": {
+        "description": "Per-tool distributions for the excursion box plot.",
+        "properties": {
+          "filters": {
+            "$ref": "#/components/schemas/FilterEcho"
+          },
+          "fleet": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BoxSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metric": {
+            "title": "Metric",
+            "type": "string"
+          },
+          "tools": {
+            "items": {
+              "$ref": "#/components/schemas/ToolBoxSummary"
+            },
+            "title": "Tools",
+            "type": "array"
+          },
+          "total_outliers": {
+            "title": "Total Outliers",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "metric",
+          "tools",
+          "total_outliers",
+          "filters"
+        ],
+        "title": "BoxplotResponse",
+        "type": "object"
+      },
+      "DateBounds": {
+        "description": "Observed operational-date window.",
+        "properties": {
+          "max_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Date"
+          },
+          "min_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Date"
+          }
+        },
+        "title": "DateBounds",
+        "type": "object"
+      },
+      "EventRow": {
+        "description": "One event row in the drill-down table.",
+        "properties": {
+          "duration_s": {
+            "title": "Duration S",
+            "type": "integer"
+          },
+          "event_key": {
+            "title": "Event Key",
+            "type": "integer"
+          },
+          "fab_site": {
+            "title": "Fab Site",
+            "type": "string"
+          },
+          "fault_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fault Code"
+          },
+          "recipe_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recipe Id"
+          },
+          "shift": {
+            "title": "Shift",
+            "type": "string"
+          },
+          "state": {
+            "title": "State",
+            "type": "string"
+          },
+          "throughput_wph": {
+            "title": "Throughput Wph",
+            "type": "number"
+          },
+          "tool_family": {
+            "title": "Tool Family",
+            "type": "string"
+          },
+          "tool_id": {
+            "title": "Tool Id",
+            "type": "string"
+          },
+          "ts": {
+            "title": "Ts",
+            "type": "string"
+          },
+          "wafers_processed": {
+            "title": "Wafers Processed",
+            "type": "integer"
+          },
+          "yield_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Yield Pct"
+          }
+        },
+        "required": [
+          "event_key",
+          "ts",
+          "tool_id",
+          "tool_family",
+          "fab_site",
+          "shift",
+          "state",
+          "wafers_processed",
+          "throughput_wph",
+          "duration_s"
+        ],
+        "title": "EventRow",
+        "type": "object"
+      },
+      "Excursion": {
+        "description": "A ranked, plain-language excursion finding.",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "deviation_sigma": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deviation Sigma"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          },
+          "headline": {
+            "title": "Headline",
+            "type": "string"
+          },
+          "metric": {
+            "title": "Metric",
+            "type": "string"
+          },
+          "rank": {
+            "title": "Rank",
+            "type": "integer"
+          },
+          "severity": {
+            "title": "Severity",
+            "type": "string"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "tool_id": {
+            "title": "Tool Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rank",
+          "tool_id",
+          "metric",
+          "severity",
+          "headline",
+          "detail"
+        ],
+        "title": "Excursion",
+        "type": "object"
+      },
+      "FaultMeta": {
+        "description": "Fault vocabulary entry.",
+        "properties": {
+          "fault_category": {
+            "title": "Fault Category",
+            "type": "string"
+          },
+          "fault_code": {
+            "title": "Fault Code",
+            "type": "string"
+          },
+          "severity": {
+            "title": "Severity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "fault_code",
+          "fault_category",
+          "severity"
+        ],
+        "title": "FaultMeta",
+        "type": "object"
+      },
+      "FilterEcho": {
+        "description": "Normalised filters echoed back with analytical responses.",
+        "properties": {
+          "fab_site": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fab Site"
+          },
+          "from_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "From Date"
+          },
+          "shifts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Shifts",
+            "type": "array"
+          },
+          "to_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "To Date"
+          },
+          "tool_family": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Family"
+          },
+          "tool_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tool Ids",
+            "type": "array"
+          }
+        },
+        "title": "FilterEcho",
+        "type": "object"
+      },
+      "FilterOptionsResponse": {
+        "description": "Everything the filter drawer needs to populate itself.",
+        "properties": {
+          "date_bounds": {
+            "$ref": "#/components/schemas/DateBounds"
+          },
+          "families": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Families",
+            "type": "array"
+          },
+          "fault_codes": {
+            "items": {
+              "$ref": "#/components/schemas/FaultMeta"
+            },
+            "title": "Fault Codes",
+            "type": "array"
+          },
+          "shifts": {
+            "items": {
+              "$ref": "#/components/schemas/ShiftMeta"
+            },
+            "title": "Shifts",
+            "type": "array"
+          },
+          "sites": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sites",
+            "type": "array"
+          },
+          "tools": {
+            "items": {
+              "$ref": "#/components/schemas/ToolMeta"
+            },
+            "title": "Tools",
+            "type": "array"
+          }
+        },
+        "required": [
+          "tools",
+          "families",
+          "sites",
+          "shifts",
+          "fault_codes",
+          "date_bounds"
+        ],
+        "title": "FilterOptionsResponse",
+        "type": "object"
+      },
+      "FleetKpi": {
+        "description": "Fleet-level availability and throughput KPIs.",
+        "properties": {
+          "availability_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Availability Pct"
+          },
+          "avg_throughput_wph": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Throughput Wph"
+          },
+          "avg_yield_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Yield Pct"
+          },
+          "engineering_hours": {
+            "title": "Engineering Hours",
+            "type": "number"
+          },
+          "events": {
+            "title": "Events",
+            "type": "integer"
+          },
+          "failure_episodes": {
+            "title": "Failure Episodes",
+            "type": "integer"
+          },
+          "mtbf_hours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mtbf Hours"
+          },
+          "mttr_hours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mttr Hours"
+          },
+          "productive_hours": {
+            "title": "Productive Hours",
+            "type": "number"
+          },
+          "scheduled_down_hours": {
+            "title": "Scheduled Down Hours",
+            "type": "number"
+          },
+          "standby_hours": {
+            "title": "Standby Hours",
+            "type": "number"
+          },
+          "throughput_p50": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Throughput P50"
+          },
+          "throughput_p95": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Throughput P95"
+          },
+          "tool_count": {
+            "title": "Tool Count",
+            "type": "integer"
+          },
+          "unscheduled_down_hours": {
+            "title": "Unscheduled Down Hours",
+            "type": "number"
+          },
+          "uptime_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uptime Pct"
+          },
+          "wafers": {
+            "title": "Wafers",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "tool_count",
+          "events",
+          "uptime_pct",
+          "availability_pct",
+          "mtbf_hours",
+          "mttr_hours",
+          "failure_episodes",
+          "productive_hours",
+          "unscheduled_down_hours",
+          "scheduled_down_hours",
+          "standby_hours",
+          "engineering_hours",
+          "wafers",
+          "avg_throughput_wph",
+          "avg_yield_pct",
+          "throughput_p50",
+          "throughput_p95"
+        ],
+        "title": "FleetKpi",
+        "type": "object"
+      },
+      "GlossaryEntry": {
+        "description": "A plain-language metric definition.",
+        "properties": {
+          "definition": {
+            "title": "Definition",
+            "type": "string"
+          },
+          "term": {
+            "title": "Term",
+            "type": "string"
+          }
+        },
+        "required": [
+          "term",
+          "definition"
+        ],
+        "title": "GlossaryEntry",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HeadlineKpi": {
+        "description": "One plain-language headline number.",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "value",
+          "detail"
+        ],
+        "title": "HeadlineKpi",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "description": "Service and warehouse health.",
+        "properties": {
+          "database": {
+            "title": "Database",
+            "type": "string"
+          },
+          "service": {
+            "title": "Service",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          },
+          "warehouse_rows": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Warehouse Rows"
+          }
+        },
+        "required": [
+          "status",
+          "service",
+          "version",
+          "database"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "HeatmapResponse": {
+        "description": "Fault counts by tool \u00d7 shift and tool \u00d7 fault code.",
+        "properties": {
+          "fault_codes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Fault Codes",
+            "type": "array"
+          },
+          "filters": {
+            "$ref": "#/components/schemas/FilterEcho"
+          },
+          "max_count": {
+            "title": "Max Count",
+            "type": "integer"
+          },
+          "shifts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Shifts",
+            "type": "array"
+          },
+          "tool_fault": {
+            "items": {
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            "title": "Tool Fault",
+            "type": "array"
+          },
+          "tool_shift": {
+            "items": {
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            "title": "Tool Shift",
+            "type": "array"
+          },
+          "tools": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tools",
+            "type": "array"
+          }
+        },
+        "required": [
+          "tools",
+          "shifts",
+          "fault_codes",
+          "tool_shift",
+          "tool_fault",
+          "max_count",
+          "filters"
+        ],
+        "title": "HeatmapResponse",
+        "type": "object"
+      },
+      "KpisResponse": {
+        "description": "Fleet and per-tool KPIs for the current filters.",
+        "properties": {
+          "filters": {
+            "$ref": "#/components/schemas/FilterEcho"
+          },
+          "fleet": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FleetKpi"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "throughput_p50": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Throughput P50"
+          },
+          "throughput_p95": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Throughput P95"
+          },
+          "tools": {
+            "items": {
+              "$ref": "#/components/schemas/ToolKpi"
+            },
+            "title": "Tools",
+            "type": "array"
+          }
+        },
+        "required": [
+          "fleet",
+          "tools",
+          "filters"
+        ],
+        "title": "KpisResponse",
+        "type": "object"
+      },
+      "OutOfControlPoint": {
+        "description": "A point outside the 3\u03c3 control limits.",
+        "properties": {
+          "date": {
+            "title": "Date",
+            "type": "string"
+          },
+          "deviation_sigma": {
+            "title": "Deviation Sigma",
+            "type": "number"
+          },
+          "side": {
+            "title": "Side",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "date",
+          "value",
+          "side",
+          "deviation_sigma"
+        ],
+        "title": "OutOfControlPoint",
+        "type": "object"
+      },
+      "ParetoResponse": {
+        "description": "Fault Pareto with the 80% cutoff codes.",
+        "properties": {
+          "codes_for_80": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Codes For 80",
+            "type": "array"
+          },
+          "filters": {
+            "$ref": "#/components/schemas/FilterEcho"
+          },
+          "n_codes": {
+            "title": "N Codes",
+            "type": "integer"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/ParetoRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "total_events": {
+            "title": "Total Events",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "rows",
+          "codes_for_80",
+          "total_events",
+          "n_codes",
+          "filters"
+        ],
+        "title": "ParetoResponse",
+        "type": "object"
+      },
+      "ParetoRow": {
+        "description": "One fault code in the Pareto table.",
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "cumulative_pct": {
+            "title": "Cumulative Pct",
+            "type": "number"
+          },
+          "fault_category": {
+            "title": "Fault Category",
+            "type": "string"
+          },
+          "fault_code": {
+            "title": "Fault Code",
+            "type": "string"
+          },
+          "pct_of_total": {
+            "title": "Pct Of Total",
+            "type": "number"
+          },
+          "severity": {
+            "title": "Severity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "fault_code",
+          "fault_category",
+          "severity",
+          "count",
+          "pct_of_total",
+          "cumulative_pct"
+        ],
+        "title": "ParetoRow",
+        "type": "object"
+      },
+      "ReportResponse": {
+        "description": "Structured engineer summary consumed by ``/report`` and the exporter.",
+        "properties": {
+          "counts": {
+            "additionalProperties": true,
+            "title": "Counts",
+            "type": "object"
+          },
+          "date_range": {
+            "$ref": "#/components/schemas/DateBounds"
+          },
+          "excursions": {
+            "items": {
+              "$ref": "#/components/schemas/Excursion"
+            },
+            "title": "Excursions",
+            "type": "array"
+          },
+          "filters": {
+            "$ref": "#/components/schemas/FilterEcho"
+          },
+          "generated_at": {
+            "title": "Generated At",
+            "type": "string"
+          },
+          "glossary": {
+            "items": {
+              "$ref": "#/components/schemas/GlossaryEntry"
+            },
+            "title": "Glossary",
+            "type": "array"
+          },
+          "headline": {
+            "items": {
+              "$ref": "#/components/schemas/HeadlineKpi"
+            },
+            "title": "Headline",
+            "type": "array"
+          },
+          "pareto_drivers": {
+            "items": {
+              "$ref": "#/components/schemas/ParetoRow"
+            },
+            "title": "Pareto Drivers",
+            "type": "array"
+          },
+          "shift_deltas": {
+            "items": {
+              "$ref": "#/components/schemas/ShiftComparison"
+            },
+            "title": "Shift Deltas",
+            "type": "array"
+          },
+          "summary_sentences": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Summary Sentences",
+            "type": "array"
+          }
+        },
+        "required": [
+          "generated_at",
+          "filters",
+          "headline",
+          "summary_sentences",
+          "excursions",
+          "pareto_drivers",
+          "shift_deltas",
+          "glossary",
+          "date_range",
+          "counts"
+        ],
+        "title": "ReportResponse",
+        "type": "object"
+      },
+      "RunRuleViolation": {
+        "description": "A Western-Electric-style run-rule violation.",
+        "properties": {
+          "date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "index": {
+            "title": "Index",
+            "type": "integer"
+          },
+          "rule": {
+            "title": "Rule",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "index",
+          "date",
+          "rule",
+          "description",
+          "value"
+        ],
+        "title": "RunRuleViolation",
+        "type": "object"
+      },
+      "ShiftComparison": {
+        "description": "One handoff comparison with a Welch t-test result.",
+        "properties": {
+          "abs_delta": {
+            "title": "Abs Delta",
+            "type": "number"
+          },
+          "from_mean": {
+            "title": "From Mean",
+            "type": "number"
+          },
+          "from_shift": {
+            "title": "From Shift",
+            "type": "string"
+          },
+          "p_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P Value"
+          },
+          "pct_delta": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pct Delta"
+          },
+          "significant": {
+            "title": "Significant",
+            "type": "boolean"
+          },
+          "t_statistic": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "T Statistic"
+          },
+          "to_mean": {
+            "title": "To Mean",
+            "type": "number"
+          },
+          "to_shift": {
+            "title": "To Shift",
+            "type": "string"
+          },
+          "tool_id": {
+            "title": "Tool Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tool_id",
+          "from_shift",
+          "to_shift",
+          "from_mean",
+          "to_mean",
+          "abs_delta",
+          "pct_delta",
+          "t_statistic",
+          "p_value",
+          "significant"
+        ],
+        "title": "ShiftComparison",
+        "type": "object"
+      },
+      "ShiftDeltaResponse": {
+        "description": "Shift-over-shift analysis for the current filters.",
+        "properties": {
+          "filters": {
+            "$ref": "#/components/schemas/FilterEcho"
+          },
+          "metric": {
+            "title": "Metric",
+            "type": "string"
+          },
+          "strongest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ShiftComparison"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tools": {
+            "items": {
+              "$ref": "#/components/schemas/ToolShiftDelta"
+            },
+            "title": "Tools",
+            "type": "array"
+          }
+        },
+        "required": [
+          "metric",
+          "tools",
+          "strongest",
+          "filters"
+        ],
+        "title": "ShiftDeltaResponse",
+        "type": "object"
+      },
+      "ShiftMeta": {
+        "description": "Shift catalog entry.",
+        "properties": {
+          "end_hour": {
+            "title": "End Hour",
+            "type": "integer"
+          },
+          "shift_code": {
+            "title": "Shift Code",
+            "type": "string"
+          },
+          "start_hour": {
+            "title": "Start Hour",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "shift_code",
+          "start_hour",
+          "end_hour"
+        ],
+        "title": "ShiftMeta",
+        "type": "object"
+      },
+      "ShiftSummary": {
+        "description": "Mean, standard deviation and sample size for one shift.",
+        "properties": {
+          "mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean"
+          },
+          "n": {
+            "title": "N",
+            "type": "integer"
+          },
+          "std": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Std"
+          }
+        },
+        "required": [
+          "mean",
+          "std",
+          "n"
+        ],
+        "title": "ShiftSummary",
+        "type": "object"
+      },
+      "TimeSeriesPoint": {
+        "description": "One day of the metric series plus rolling statistics.",
+        "properties": {
+          "date": {
+            "title": "Date",
+            "type": "string"
+          },
+          "rolling_mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rolling Mean"
+          },
+          "rolling_std": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rolling Std"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "date"
+        ],
+        "title": "TimeSeriesPoint",
+        "type": "object"
+      },
+      "TimeSeriesResponse": {
+        "description": "Daily series with rolling stats, control limits and violations.",
+        "properties": {
+          "center": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Center"
+          },
+          "filters": {
+            "$ref": "#/components/schemas/FilterEcho"
+          },
+          "lcl": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lcl"
+          },
+          "metric": {
+            "title": "Metric",
+            "type": "string"
+          },
+          "out_of_control": {
+            "items": {
+              "$ref": "#/components/schemas/OutOfControlPoint"
+            },
+            "title": "Out Of Control",
+            "type": "array"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/TimeSeriesPoint"
+            },
+            "title": "Series",
+            "type": "array"
+          },
+          "sigma": {
+            "title": "Sigma",
+            "type": "number"
+          },
+          "std": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Std"
+          },
+          "ucl": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ucl"
+          },
+          "violations": {
+            "items": {
+              "$ref": "#/components/schemas/RunRuleViolation"
+            },
+            "title": "Violations",
+            "type": "array"
+          },
+          "window": {
+            "title": "Window",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "metric",
+          "window",
+          "sigma",
+          "series",
+          "center",
+          "std",
+          "ucl",
+          "lcl",
+          "violations",
+          "out_of_control",
+          "filters"
+        ],
+        "title": "TimeSeriesResponse",
+        "type": "object"
+      },
+      "ToolBoxSummary": {
+        "description": "Per-tool box plot summary.",
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "iqr": {
+            "title": "Iqr",
+            "type": "number"
+          },
+          "lower_fence": {
+            "title": "Lower Fence",
+            "type": "number"
+          },
+          "max": {
+            "title": "Max",
+            "type": "number"
+          },
+          "mean": {
+            "title": "Mean",
+            "type": "number"
+          },
+          "median": {
+            "title": "Median",
+            "type": "number"
+          },
+          "min": {
+            "title": "Min",
+            "type": "number"
+          },
+          "outliers": {
+            "items": {
+              "$ref": "#/components/schemas/BoxplotOutlier"
+            },
+            "title": "Outliers",
+            "type": "array"
+          },
+          "p5": {
+            "title": "P5",
+            "type": "number"
+          },
+          "p95": {
+            "title": "P95",
+            "type": "number"
+          },
+          "q1": {
+            "title": "Q1",
+            "type": "number"
+          },
+          "q3": {
+            "title": "Q3",
+            "type": "number"
+          },
+          "std": {
+            "title": "Std",
+            "type": "number"
+          },
+          "tool_family": {
+            "title": "Tool Family",
+            "type": "string"
+          },
+          "tool_id": {
+            "title": "Tool Id",
+            "type": "string"
+          },
+          "upper_fence": {
+            "title": "Upper Fence",
+            "type": "number"
+          }
+        },
+        "required": [
+          "count",
+          "min",
+          "p5",
+          "q1",
+          "median",
+          "q3",
+          "p95",
+          "max",
+          "mean",
+          "std",
+          "iqr",
+          "lower_fence",
+          "upper_fence",
+          "outliers",
+          "tool_id",
+          "tool_family"
+        ],
+        "title": "ToolBoxSummary",
+        "type": "object"
+      },
+      "ToolEventsResponse": {
+        "description": "Server-paginated event timeline for one tool.",
+        "properties": {
+          "page": {
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/EventRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "sort_by": {
+            "title": "Sort By",
+            "type": "string"
+          },
+          "sort_dir": {
+            "title": "Sort Dir",
+            "type": "string"
+          },
+          "tool_id": {
+            "title": "Tool Id",
+            "type": "string"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "total_pages": {
+            "title": "Total Pages",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "tool_id",
+          "page",
+          "page_size",
+          "total",
+          "total_pages",
+          "sort_by",
+          "sort_dir",
+          "rows"
+        ],
+        "title": "ToolEventsResponse",
+        "type": "object"
+      },
+      "ToolKpi": {
+        "description": "Per-tool KPI card values.",
+        "properties": {
+          "availability_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Availability Pct"
+          },
+          "avg_throughput_wph": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Throughput Wph"
+          },
+          "avg_yield_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Yield Pct"
+          },
+          "engineering_hours": {
+            "title": "Engineering Hours",
+            "type": "number"
+          },
+          "events": {
+            "title": "Events",
+            "type": "integer"
+          },
+          "fab_site": {
+            "title": "Fab Site",
+            "type": "string"
+          },
+          "failure_episodes": {
+            "title": "Failure Episodes",
+            "type": "integer"
+          },
+          "mtbf_hours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mtbf Hours"
+          },
+          "mttr_hours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mttr Hours"
+          },
+          "productive_hours": {
+            "title": "Productive Hours",
+            "type": "number"
+          },
+          "scheduled_down_hours": {
+            "title": "Scheduled Down Hours",
+            "type": "number"
+          },
+          "standby_hours": {
+            "title": "Standby Hours",
+            "type": "number"
+          },
+          "tool_family": {
+            "title": "Tool Family",
+            "type": "string"
+          },
+          "tool_id": {
+            "title": "Tool Id",
+            "type": "string"
+          },
+          "unscheduled_down_hours": {
+            "title": "Unscheduled Down Hours",
+            "type": "number"
+          },
+          "uptime_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uptime Pct"
+          },
+          "wafers": {
+            "title": "Wafers",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "tool_id",
+          "tool_family",
+          "fab_site",
+          "events",
+          "uptime_pct",
+          "availability_pct",
+          "mtbf_hours",
+          "mttr_hours",
+          "failure_episodes",
+          "productive_hours",
+          "unscheduled_down_hours",
+          "scheduled_down_hours",
+          "standby_hours",
+          "engineering_hours",
+          "wafers",
+          "avg_throughput_wph",
+          "avg_yield_pct"
+        ],
+        "title": "ToolKpi",
+        "type": "object"
+      },
+      "ToolMeta": {
+        "description": "Tool catalog entry.",
+        "properties": {
+          "fab_site": {
+            "title": "Fab Site",
+            "type": "string"
+          },
+          "install_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Install Date"
+          },
+          "tool_family": {
+            "title": "Tool Family",
+            "type": "string"
+          },
+          "tool_id": {
+            "title": "Tool Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tool_id",
+          "tool_family",
+          "fab_site"
+        ],
+        "title": "ToolMeta",
+        "type": "object"
+      },
+      "ToolShiftDelta": {
+        "description": "Shift means and handoff comparisons for one tool.",
+        "properties": {
+          "comparisons": {
+            "items": {
+              "$ref": "#/components/schemas/ShiftComparison"
+            },
+            "title": "Comparisons",
+            "type": "array"
+          },
+          "shifts": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ShiftSummary"
+            },
+            "title": "Shifts",
+            "type": "object"
+          },
+          "tool_id": {
+            "title": "Tool Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tool_id",
+          "shifts",
+          "comparisons"
+        ],
+        "title": "ToolShiftDelta",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Semiconductor equipment telemetry analytics: star-schema warehouse, SPC statistics and engineer-ready summaries.",
+    "title": "FabPulse API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/boxplot": {
+      "get": {
+        "description": "Return per-tool five-number summaries, IQR fences and Tukey outliers.",
+        "operationId": "boxplot_api_boxplot_get",
+        "parameters": [
+          {
+            "description": "Inclusive operational start date",
+            "in": "query",
+            "name": "from_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive operational start date",
+              "title": "From Date"
+            }
+          },
+          {
+            "description": "Inclusive operational end date",
+            "in": "query",
+            "name": "to_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive operational end date",
+              "title": "To Date"
+            }
+          },
+          {
+            "description": "Tool id (repeatable)",
+            "in": "query",
+            "name": "tool_ids",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tool id (repeatable)",
+              "title": "Tool Ids"
+            }
+          },
+          {
+            "description": "SCANNER, TRACK or METRO",
+            "in": "query",
+            "name": "tool_family",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "SCANNER, TRACK or METRO",
+              "title": "Tool Family"
+            }
+          },
+          {
+            "description": "FAB-A or FAB-B",
+            "in": "query",
+            "name": "fab_site",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "FAB-A or FAB-B",
+              "title": "Fab Site"
+            }
+          },
+          {
+            "description": "Shift code (repeatable)",
+            "in": "query",
+            "name": "shifts",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Shift code (repeatable)",
+              "title": "Shifts"
+            }
+          },
+          {
+            "description": "Metric for series and box plots",
+            "in": "query",
+            "name": "metric",
+            "required": false,
+            "schema": {
+              "default": "throughput_wph",
+              "description": "Metric for series and box plots",
+              "title": "Metric",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoxplotResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Boxplot",
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
+    "/api/health": {
+      "get": {
+        "description": "Report service health, active database backend and warehouse size.",
+        "operationId": "api_health_api_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Api Health",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/heatmap": {
+      "get": {
+        "description": "Return fault-count matrices for tool \u00d7 shift and tool \u00d7 fault code.",
+        "operationId": "heatmap_api_heatmap_get",
+        "parameters": [
+          {
+            "description": "Inclusive operational start date",
+            "in": "query",
+            "name": "from_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive operational start date",
+              "title": "From Date"
+            }
+          },
+          {
+            "description": "Inclusive operational end date",
+            "in": "query",
+            "name": "to_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive operational end date",
+              "title": "To Date"
+            }
+          },
+          {
+            "description": "Tool id (repeatable)",
+            "in": "query",
+            "name": "tool_ids",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tool id (repeatable)",
+              "title": "Tool Ids"
+            }
+          },
+          {
+            "description": "SCANNER, TRACK or METRO",
+            "in": "query",
+            "name": "tool_family",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "SCANNER, TRACK or METRO",
+              "title": "Tool Family"
+            }
+          },
+          {
+            "description": "FAB-A or FAB-B",
+            "in": "query",
+            "name": "fab_site",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "FAB-A or FAB-B",
+              "title": "Fab Site"
+            }
+          },
+          {
+            "description": "Shift code (repeatable)",
+            "in": "query",
+            "name": "shifts",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Shift code (repeatable)",
+              "title": "Shifts"
+            }
+          },
+          {
+            "description": "Metric for series and box plots",
+            "in": "query",
+            "name": "metric",
+            "required": false,
+            "schema": {
+              "default": "throughput_wph",
+              "description": "Metric for series and box plots",
+              "title": "Metric",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HeatmapResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Heatmap",
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
+    "/api/kpis": {
+      "get": {
+        "description": "Return fleet and per-tool availability, MTBF/MTTR and throughput KPIs.",
+        "operationId": "kpis_api_kpis_get",
+        "parameters": [
+          {
+            "description": "Inclusive operational start date",
+            "in": "query",
+            "name": "from_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive operational start date",
+              "title": "From Date"
+            }
+          },
+          {
+            "description": "Inclusive operational end date",
+            "in": "query",
+            "name": "to_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive operational end date",
+              "title": "To Date"
+            }
+          },
+          {
+            "description": "Tool id (repeatable)",
+            "in": "query",
+            "name": "tool_ids",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tool id (repeatable)",
+              "title": "Tool Ids"
+            }
+          },
+          {
+            "description": "SCANNER, TRACK or METRO",
+            "in": "query",
+            "name": "tool_family",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "SCANNER, TRACK or METRO",
+              "title": "Tool Family"
+            }
+          },
+          {
+            "description": "FAB-A or FAB-B",
+            "in": "query",
+            "name": "fab_site",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "FAB-A or FAB-B",
+              "title": "Fab Site"
+            }
+          },
+          {
+            "description": "Shift code (repeatable)",
+            "in": "query",
+            "name": "shifts",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Shift code (repeatable)",
+              "title": "Shifts"
+            }
+          },
+          {
+            "description": "Metric for series and box plots",
+            "in": "query",
+            "name": "metric",
+            "required": false,
+            "schema": {
+              "default": "throughput_wph",
+              "description": "Metric for series and box plots",
+              "title": "Metric",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KpisResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Kpis",
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
+    "/api/meta/filters": {
+      "get": {
+        "description": "Return tools, families, sites, shifts, faults and the observed date bounds.",
+        "operationId": "filter_options_api_meta_filters_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilterOptionsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Filter Options",
+        "tags": [
+          "meta"
+        ]
+      }
+    },
+    "/api/pareto": {
+      "get": {
+        "description": "Return the fault Pareto table with the 80% cutoff codes.",
+        "operationId": "pareto_api_pareto_get",
+        "parameters": [
+          {
+            "description": "Inclusive operational start date",
+            "in": "query",
+            "name": "from_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive operational start date",
+              "title": "From Date"
+            }
+          },
+          {
+            "description": "Inclusive operational end date",
+            "in": "query",
+            "name": "to_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive operational end date",
+              "title": "To Date"
+            }
+          },
+          {
+            "description": "Tool id (repeatable)",
+            "in": "query",
+            "name": "tool_ids",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tool id (repeatable)",
+              "title": "Tool Ids"
+            }
+          },
+          {
+            "description": "SCANNER, TRACK or METRO",
+            "in": "query",
+            "name": "tool_family",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "SCANNER, TRACK or METRO",
+              "title": "Tool Family"
+            }
+          },
+          {
+            "description": "FAB-A or FAB-B",
+            "in": "query",
+            "name": "fab_site",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "FAB-A or FAB-B",
+              "title": "Fab Site"
+            }
+          },
+          {
+            "description": "Shift code (repeatable)",
+            "in": "query",
+            "name": "shifts",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Shift code (repeatable)",
+              "title": "Shifts"
+            }
+          },
+          {
+            "description": "Metric for series and box plots",
+            "in": "query",
+            "name": "metric",
+            "required": false,
+            "schema": {
+              "default": "throughput_wph",
+              "description": "Metric for series and box plots",
+              "title": "Metric",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParetoResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Pareto",
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
+    "/api/report/summary": {
+      "get": {
+        "description": "Return the plain-language engineer summary for the current filters.",
+        "operationId": "report_summary_api_report_summary_get",
+        "parameters": [
+          {
+            "description": "Inclusive operational start date",
+            "in": "query",
+            "name": "from_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive operational start date",
+              "title": "From Date"
+            }
+          },
+          {
+            "description": "Inclusive operational end date",
+            "in": "query",
+            "name": "to_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive operational end date",
+              "title": "To Date"
+            }
+          },
+          {
+            "description": "Tool id (repeatable)",
+            "in": "query",
+            "name": "tool_ids",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tool id (repeatable)",
+              "title": "Tool Ids"
+            }
+          },
+          {
+            "description": "SCANNER, TRACK or METRO",
+            "in": "query",
+            "name": "tool_family",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "SCANNER, TRACK or METRO",
+              "title": "Tool Family"
+            }
+          },
+          {
+            "description": "FAB-A or FAB-B",
+            "in": "query",
+            "name": "fab_site",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "FAB-A or FAB-B",
+              "title": "Fab Site"
+            }
+          },
+          {
+            "description": "Shift code (repeatable)",
+            "in": "query",
+            "name": "shifts",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Shift code (repeatable)",
+              "title": "Shifts"
+            }
+          },
+          {
+            "description": "Metric for series and box plots",
+            "in": "query",
+            "name": "metric",
+            "required": false,
+            "schema": {
+              "default": "throughput_wph",
+              "description": "Metric for series and box plots",
+              "title": "Metric",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Report Summary",
+        "tags": [
+          "report"
+        ]
+      }
+    },
+    "/api/shifts/delta": {
+      "get": {
+        "description": "Return per-tool shift means and Welch-tested handoff comparisons.",
+        "operationId": "shift_delta_api_shifts_delta_get",
+        "parameters": [
+          {
+            "description": "Inclusive operational start date",
+            "in": "query",
+            "name": "from_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive operational start date",
+              "title": "From Date"
+            }
+          },
+          {
+            "description": "Inclusive operational end date",
+            "in": "query",
+            "name": "to_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive operational end date",
+              "title": "To Date"
+            }
+          },
+          {
+            "description": "Tool id (repeatable)",
+            "in": "query",
+            "name": "tool_ids",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tool id (repeatable)",
+              "title": "Tool Ids"
+            }
+          },
+          {
+            "description": "SCANNER, TRACK or METRO",
+            "in": "query",
+            "name": "tool_family",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "SCANNER, TRACK or METRO",
+              "title": "Tool Family"
+            }
+          },
+          {
+            "description": "FAB-A or FAB-B",
+            "in": "query",
+            "name": "fab_site",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "FAB-A or FAB-B",
+              "title": "Fab Site"
+            }
+          },
+          {
+            "description": "Shift code (repeatable)",
+            "in": "query",
+            "name": "shifts",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Shift code (repeatable)",
+              "title": "Shifts"
+            }
+          },
+          {
+            "description": "Metric for series and box plots",
+            "in": "query",
+            "name": "metric",
+            "required": false,
+            "schema": {
+              "default": "throughput_wph",
+              "description": "Metric for series and box plots",
+              "title": "Metric",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShiftDeltaResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Shift Delta",
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
+    "/api/timeseries": {
+      "get": {
+        "description": "Return the daily metric series with rolling stats and control limits.",
+        "operationId": "timeseries_api_timeseries_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "window",
+            "required": false,
+            "schema": {
+              "default": 7,
+              "maximum": 365,
+              "minimum": 1,
+              "title": "Window",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sigma",
+            "required": false,
+            "schema": {
+              "default": 3.0,
+              "exclusiveMinimum": 0,
+              "maximum": 6,
+              "title": "Sigma",
+              "type": "number"
+            }
+          },
+          {
+            "description": "Inclusive operational start date",
+            "in": "query",
+            "name": "from_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive operational start date",
+              "title": "From Date"
+            }
+          },
+          {
+            "description": "Inclusive operational end date",
+            "in": "query",
+            "name": "to_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive operational end date",
+              "title": "To Date"
+            }
+          },
+          {
+            "description": "Tool id (repeatable)",
+            "in": "query",
+            "name": "tool_ids",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tool id (repeatable)",
+              "title": "Tool Ids"
+            }
+          },
+          {
+            "description": "SCANNER, TRACK or METRO",
+            "in": "query",
+            "name": "tool_family",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "SCANNER, TRACK or METRO",
+              "title": "Tool Family"
+            }
+          },
+          {
+            "description": "FAB-A or FAB-B",
+            "in": "query",
+            "name": "fab_site",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "FAB-A or FAB-B",
+              "title": "Fab Site"
+            }
+          },
+          {
+            "description": "Shift code (repeatable)",
+            "in": "query",
+            "name": "shifts",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Shift code (repeatable)",
+              "title": "Shifts"
+            }
+          },
+          {
+            "description": "Metric for series and box plots",
+            "in": "query",
+            "name": "metric",
+            "required": false,
+            "schema": {
+              "default": "throughput_wph",
+              "description": "Metric for series and box plots",
+              "title": "Metric",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimeSeriesResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Timeseries",
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
+    "/api/tools/{tool_id}/events": {
+      "get": {
+        "description": "Return a server-paginated, server-sorted event timeline for one tool.",
+        "operationId": "tool_events_api_tools__tool_id__events_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tool_id",
+            "required": true,
+            "schema": {
+              "title": "Tool Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "required": false,
+            "schema": {
+              "default": "ts",
+              "title": "Sort By",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort_dir",
+            "required": false,
+            "schema": {
+              "default": "desc",
+              "pattern": "^(asc|desc)$",
+              "title": "Sort Dir",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Inclusive operational start date",
+            "in": "query",
+            "name": "from_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive operational start date",
+              "title": "From Date"
+            }
+          },
+          {
+            "description": "Inclusive operational end date",
+            "in": "query",
+            "name": "to_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive operational end date",
+              "title": "To Date"
+            }
+          },
+          {
+            "description": "Tool id (repeatable)",
+            "in": "query",
+            "name": "tool_ids",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tool id (repeatable)",
+              "title": "Tool Ids"
+            }
+          },
+          {
+            "description": "SCANNER, TRACK or METRO",
+            "in": "query",
+            "name": "tool_family",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "SCANNER, TRACK or METRO",
+              "title": "Tool Family"
+            }
+          },
+          {
+            "description": "FAB-A or FAB-B",
+            "in": "query",
+            "name": "fab_site",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "FAB-A or FAB-B",
+              "title": "Fab Site"
+            }
+          },
+          {
+            "description": "Shift code (repeatable)",
+            "in": "query",
+            "name": "shifts",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Shift code (repeatable)",
+              "title": "Shifts"
+            }
+          },
+          {
+            "description": "Metric for series and box plots",
+            "in": "query",
+            "name": "metric",
+            "required": false,
+            "schema": {
+              "default": "throughput_wph",
+              "description": "Metric for series and box plots",
+              "title": "Metric",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolEventsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Tool Events",
+        "tags": [
+          "drilldown"
+        ]
+      }
+    }
+  }
+}

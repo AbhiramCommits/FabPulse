@@ -40,7 +40,7 @@ def coerce_filters(filters: Filters | Mapping[str, Any] | None) -> Filters:
     return Filters.from_mapping(filters)
 
 
-def _validate_metric(metric: str) -> str:
+def validate_metric(metric: str) -> str:
     """Validate a metric name against the SQL whitelist."""
     if metric not in SUPPORTED_METRICS:
         allowed = ", ".join(SUPPORTED_METRICS)
@@ -74,7 +74,7 @@ def daily_series(
     Returns:
         DataFrame with ``date`` (ISO str) and ``value`` columns sorted by date.
     """
-    metric = _validate_metric(metric)
+    metric = validate_metric(metric)
     filters = coerce_filters(filters)
     tool_daily = queries.daily_metric_by_tool(metric, filters)
     if tool_daily.empty:
@@ -205,6 +205,80 @@ def detect_run_rules(
     return violations
 
 
+def compute_control_limits(
+    values: Sequence[float],
+    sigma: float = 3.0,
+    dates: Sequence[Any] | None = None,
+    metric: str = "",
+) -> dict[str, Any]:
+    """Compute a control chart from an in-memory series (pure function).
+
+    Args:
+        values: Ordered observations (NaNs are skipped).
+        sigma: Control-limit width in standard deviations.
+        dates: Optional parallel labels.
+        metric: Metric name echoed in the result.
+
+    Returns:
+        Dict with ``center``, ``std``, ``ucl``, ``lcl``, ``points``,
+        ``out_of_control`` and ``violations``.
+    """
+    if sigma <= 0:
+        raise ValueError("sigma must be positive")
+    clean = [float(v) for v in values if v is not None and not pd.isna(v)]
+    labels = (
+        [d for v, d in zip(values, dates) if v is not None and not pd.isna(v)]
+        if dates is not None
+        else list(range(len(clean)))
+    )
+    if not clean:
+        return {
+            "metric": metric,
+            "sigma": sigma,
+            "center": None,
+            "std": None,
+            "ucl": None,
+            "lcl": None,
+            "n": 0,
+            "points": [],
+            "out_of_control": [],
+            "violations": [],
+        }
+    center = float(np.mean(clean))
+    std = float(np.std(clean, ddof=1)) if len(clean) > 1 else 0.0
+    ucl = center + sigma * std
+    lcl = center - sigma * std
+    points = [
+        {"date": _iso(d), "value": round(float(v), 4)} for d, v in zip(labels, clean)
+    ]
+    out_of_control: list[dict[str, Any]] = []
+    if std > 0:
+        for label, value in zip(labels, clean):
+            deviation = (value - center) / std
+            if abs(deviation) > sigma:
+                out_of_control.append(
+                    {
+                        "date": _iso(label),
+                        "value": round(float(value), 4),
+                        "side": "above" if deviation > 0 else "below",
+                        "deviation_sigma": round(deviation, 3),
+                    }
+                )
+    violations = detect_run_rules(clean, center, std, labels)
+    return {
+        "metric": metric,
+        "sigma": sigma,
+        "center": round(center, 4),
+        "std": round(std, 4),
+        "ucl": round(ucl, 4),
+        "lcl": round(lcl, 4),
+        "n": int(len(clean)),
+        "points": points,
+        "out_of_control": out_of_control,
+        "violations": violations,
+    }
+
+
 def control_limits(
     metric: str = "throughput_wph",
     sigma: float = 3.0,
@@ -223,7 +297,7 @@ def control_limits(
     """
     if sigma <= 0:
         raise ValueError("sigma must be positive")
-    metric = _validate_metric(metric)
+    metric = validate_metric(metric)
     frame = daily_series(metric, filters)
     if frame.empty:
         return {
@@ -238,45 +312,10 @@ def control_limits(
             "out_of_control": [],
             "violations": [],
         }
-    values = frame["value"].astype(float)
-    valid = values.dropna()
-    center = float(valid.mean()) if not valid.empty else float("nan")
-    std = float(valid.std(ddof=1)) if len(valid) > 1 else 0.0
-    ucl = center + sigma * std
-    lcl = center - sigma * std
-    labels = frame["date"].tolist()
-    points = [
-        {"date": _iso(d), "value": round(float(v), 4)}
-        for d, v in zip(labels, values)
-        if not pd.isna(v)
-    ]
-    out_of_control: list[dict[str, Any]] = []
-    violations = detect_run_rules(values.tolist(), center, std, labels)
-    for d, v in zip(labels, values):
-        if pd.isna(v) or std <= 0:
-            continue
-        deviation = (float(v) - center) / std
-        if abs(deviation) > sigma:
-            out_of_control.append(
-                {
-                    "date": _iso(d),
-                    "value": round(float(v), 4),
-                    "side": "above" if deviation > 0 else "below",
-                    "deviation_sigma": round(deviation, 3),
-                }
-            )
-    return {
-        "metric": metric,
-        "sigma": sigma,
-        "center": round(center, 4),
-        "std": round(std, 4),
-        "ucl": round(ucl, 4),
-        "lcl": round(lcl, 4),
-        "n": int(len(valid)),
-        "points": points,
-        "out_of_control": out_of_control,
-        "violations": violations,
-    }
+    result = compute_control_limits(
+        frame["value"].tolist(), sigma=sigma, dates=frame["date"].tolist(), metric=metric
+    )
+    return result
 
 
 def percentiles_outliers(
@@ -296,7 +335,7 @@ def percentiles_outliers(
         Dict with ``tools`` (list of summaries), ``fleet`` summary and
         ``total_outliers``.
     """
-    metric = _validate_metric(metric)
+    metric = validate_metric(metric)
     filters = coerce_filters(filters)
     frame = queries.daily_metric_by_tool(metric, filters)
     if frame.empty:
@@ -410,7 +449,7 @@ def shift_over_shift_delta(
         Dict with ``tools`` (shift means and comparisons), and ``strongest``,
         the most significant comparison across the fleet.
     """
-    metric = _validate_metric(metric)
+    metric = validate_metric(metric)
     filters = coerce_filters(filters)
     frame = queries.daily_metric_by_tool_shift(metric, filters)
     if frame.empty:

@@ -384,6 +384,17 @@ def tool_events_page(
     return rows, total
 
 
+def tool_exists(tool_id: str, engine: Engine | None = None) -> bool:
+    """Return ``True`` when *tool_id* exists in ``dim_tool``."""
+    engine = engine or db.get_engine()
+    frame = pd.read_sql_query(
+        text("SELECT 1 AS found FROM dim_tool WHERE tool_id = :tool_id"),
+        engine,
+        params={"tool_id": tool_id},
+    )
+    return not frame.empty
+
+
 def warehouse_counts(engine: Engine | None = None) -> dict[str, int]:
     """Return row counts for every warehouse table (README/health tooling)."""
     engine = engine or db.get_engine()

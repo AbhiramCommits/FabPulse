@@ -189,7 +189,8 @@ export default function ToolDetailPage() {
           {tool ? <Tag color="geekblue">{tool.tool_family}</Tag> : null}
           {tool ? <Tag>{tool.fab_site}</Tag> : null}
           <Typography.Text type="secondary">
-            {filters.from_date ?? 'first day'} → {filters.to_date ?? 'last day'}
+            {filters.from_date ?? series.data?.series[0]?.date ?? 'first day'} →{' '}
+            {filters.to_date ?? series.data?.series.at(-1)?.date ?? 'last day'}
           </Typography.Text>
         </Space>
         <Typography.Paragraph type="secondary" style={{ marginBottom: 0, marginTop: 6 }}>

@@ -150,6 +150,7 @@ def detect_run_rules(
     violations: list[dict[str, Any]] = []
 
     def add(position: int, rule: str, description: str) -> None:
+        """Append one violation anchored at a cleaned-series position."""
         violations.append(
             {
                 "index": clean_indices[position],
@@ -401,6 +402,7 @@ def percentiles_outliers(
         return {"metric": metric, "tools": [], "fleet": None, "total_outliers": 0}
 
     def summarize(values: np.ndarray, group: pd.DataFrame | None = None) -> dict[str, Any]:
+        """Summarise one group and attach its Tukey outliers."""
         summary = distribution_summary(values)
         outliers: list[dict[str, Any]] = []
         if group is not None:

@@ -40,7 +40,7 @@ export function buildHeatmapOption(
         return `${xLabels[x]}<br/>${yLabels[y]}: <b>${value}</b> faults`
       },
     },
-    grid: { left: 88, right: 24, top: 16, bottom: 76 },
+    grid: { left: 88, right: 24, top: 16, bottom: 112 },
     xAxis: {
       type: 'category',
       data: xLabels,

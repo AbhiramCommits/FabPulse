@@ -447,8 +447,13 @@ def load_warehouse(
     engine: Engine | None = None,
     truncate: bool = False,
     chunk_size: int = 10_000,
+    defer_indexes: bool = True,
 ) -> dict[str, int]:
     """Insert dimensions and facts; optionally rebuild the warehouse first.
+
+    Bulk loads are faster with the fact indexes out of the way: each index
+    otherwise has to be maintained for all 300k inserts.  The indexes are
+    recreated in one pass immediately after the transaction commits.
 
     Args:
         events: Cleaned events.
@@ -456,6 +461,7 @@ def load_warehouse(
         engine: Target engine (defaults to the resolved warehouse).
         truncate: Drop and recreate every table before loading.
         chunk_size: Fact rows per executemany batch.
+        defer_indexes: Drop fact indexes before the load and rebuild them after.
 
     Returns:
         Row counts per warehouse table after loading.
@@ -480,23 +486,35 @@ def load_warehouse(
 
     facts = build_facts(events, dimensions)
 
+    deferred_indexes = []
+    if defer_indexes:
+        for index in fact_tool_event.indexes:
+            index.drop(engine, checkfirst=True)
+            deferred_indexes.append(index)
+
     # SQLite cannot store timezone offsets in a DATETIME column; both backends
     # store UTC, so strip the tzinfo only for SQLite.
     if engine.dialect.name == "sqlite":
         facts["ts"] = facts["ts"].dt.tz_localize(None)
 
-    with engine.begin() as conn:
-        conn.execute(insert(dim_tool), _to_records(dimensions["dim_tool"]))
-        conn.execute(insert(dim_date), _to_records(dimensions["dim_date"]))
-        conn.execute(insert(dim_shift), _to_records(dimensions["dim_shift"]))
-        conn.execute(insert(dim_fault), _to_records(dimensions["dim_fault"]))
-        columns = list(FACT_COLUMNS)
-        for start in range(0, len(facts), chunk_size):
-            chunk = facts.iloc[start : start + chunk_size]
-            conn.execute(
-                insert(fact_tool_event),
-                _to_records(chunk[columns]),
-            )
+    try:
+        with engine.begin() as conn:
+            conn.execute(insert(dim_tool), _to_records(dimensions["dim_tool"]))
+            conn.execute(insert(dim_date), _to_records(dimensions["dim_date"]))
+            conn.execute(insert(dim_shift), _to_records(dimensions["dim_shift"]))
+            conn.execute(insert(dim_fault), _to_records(dimensions["dim_fault"]))
+            columns = list(FACT_COLUMNS)
+            for start in range(0, len(facts), chunk_size):
+                chunk = facts.iloc[start : start + chunk_size]
+                conn.execute(
+                    insert(fact_tool_event),
+                    _to_records(chunk[columns]),
+                )
+    finally:
+        # Restore the indexes even if the load failed, so the warehouse is
+        # never left in a slow/unindexed state.
+        for index in deferred_indexes:
+            index.create(engine, checkfirst=True)
 
     with engine.connect() as conn:
         counts = {

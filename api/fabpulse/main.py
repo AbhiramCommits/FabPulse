@@ -215,6 +215,7 @@ def kpis(
     tools = list(data["tools"])
 
     def sort_value(tool: dict) -> object:
+        """Sort key that keeps nulls last in either direction."""
         value = tool.get(sort_by)
         if isinstance(value, str):
             return value.lower()

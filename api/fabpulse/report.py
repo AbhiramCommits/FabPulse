@@ -239,6 +239,7 @@ def build_summary(
         A dict matching :class:`fabpulse.models.ReportResponse`.
     """
     filters = stats.coerce_filters(filters)
+    echo = {**filters.as_dict(), "metric": metric}
     kpis = stats.availability_kpis(filters)
     pareto = stats.fault_pareto(filters)
     shifts = stats.shift_over_shift_delta(metric, filters)
@@ -249,7 +250,7 @@ def build_summary(
     if fleet is None:
         return {
             "generated_at": generated_at,
-            "filters": filters.as_dict(),
+            "filters": echo,
             "headline": [],
             "summary_sentences": ["No events match the selected filters."],
             "excursions": [],
@@ -347,6 +348,18 @@ def build_summary(
         f"{_fmt_number(fleet['mtbf_hours'], 1, ' h')} and MTTR "
         f"{_fmt_number(fleet['mttr_hours'], 2, ' h')}."
     )
+    summary_sentences.append(
+        f"Fleet throughput averaged {_fmt_number(fleet['avg_throughput_wph'], 1, ' wafers/hour')} "
+        f"(median {_fmt_number(fleet['throughput_p50'], 1)}, p95 "
+        f"{_fmt_number(fleet['throughput_p95'], 1)}), while yield averaged "
+        f"{_fmt_number(fleet['avg_yield_pct'], 2, '%')} ± {_fmt_number(yield_std, 2)} "
+        f"across tool-days."
+    )
+    if not top_findings:
+        summary_sentences.append(
+            "No tool crossed its 3σ control limits or produced eight consecutive "
+            "one-sided points in this window, so the process looks statistically stable."
+        )
     for finding in top_findings:
         summary_sentences.append(finding["headline"])
     if pareto["total_events"]:
@@ -376,7 +389,7 @@ def build_summary(
 
     return {
         "generated_at": generated_at,
-        "filters": filters.as_dict(),
+        "filters": echo,
         "headline": headline,
         "summary_sentences": summary_sentences,
         "excursions": excursions,

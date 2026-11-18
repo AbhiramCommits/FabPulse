@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import {
+  Button,
   Card,
   Collapse,
   Col,
@@ -11,13 +12,27 @@ import {
   Statistic,
   Table,
   Tag,
+  Tooltip,
   Typography,
+  App as AntdApp,
 } from 'antd'
+import { DownloadOutlined, InfoCircleOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import type { Excursion, ParetoRow, ShiftComparison } from '../api/types'
 import { InlineError } from '../components/ChartCard'
+import { METRIC_DEFINITIONS } from '../constants/metricDefinitions'
 import { useReport } from '../hooks/useData'
 import { useFilterState } from '../hooks/useFilterState'
+import { downloadText, reportToCsv, reportToMarkdown } from '../report/exportReport'
+
+const HEADLINE_DEFINITIONS: Record<string, string> = {
+  Uptime: METRIC_DEFINITIONS.uptime_pct,
+  'Availability (OEE)': METRIC_DEFINITIONS.availability_pct,
+  MTBF: METRIC_DEFINITIONS.mtbf_hours,
+  MTTR: METRIC_DEFINITIONS.mttr_hours,
+  'Throughput p50': METRIC_DEFINITIONS.throughput,
+  Yield: METRIC_DEFINITIONS.yield_pct,
+}
 
 const excursionColumns: ColumnsType<Excursion> = [
   { title: '#', dataIndex: 'rank', width: 50 },
@@ -111,6 +126,7 @@ const shiftColumns: ColumnsType<ShiftComparison> = [
 export default function ReportPage() {
   const { filters } = useFilterState()
   const report = useReport(filters)
+  const { message } = AntdApp.useApp()
 
   useEffect(() => {
     document.title = 'FabPulse · Engineer report'
@@ -126,17 +142,44 @@ export default function ReportPage() {
 
   const data = report.data
 
+  const exportReport = (format: 'md' | 'csv') => {
+    if (format === 'md') {
+      downloadText('fabpulse_report.md', reportToMarkdown(data), 'text/markdown;charset=utf-8')
+    } else {
+      downloadText('fabpulse_report.csv', reportToCsv(data), 'text/csv;charset=utf-8')
+    }
+    message.success(`Exported ${format === 'md' ? 'Markdown' : 'CSV'} report`)
+  }
+
   return (
     <Space direction="vertical" size={16} style={{ width: '100%' }}>
-      <div>
-        <Typography.Title level={3} style={{ marginBottom: 4 }}>
-          Engineer report
-        </Typography.Title>
-        <Typography.Text type="secondary">
-          Generated {new Date(data.generated_at).toLocaleString()} ·{' '}
-          {data.date_range.min_date ?? 'n/a'} → {data.date_range.max_date ?? 'n/a'} ·{' '}
-          {data.counts.events?.toLocaleString() ?? 0} event intervals
-        </Typography.Text>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          gap: 12,
+          flexWrap: 'wrap',
+        }}
+      >
+        <div>
+          <Typography.Title level={3} style={{ marginBottom: 4 }}>
+            Engineer report
+          </Typography.Title>
+          <Typography.Text type="secondary">
+            Generated {new Date(data.generated_at).toLocaleString()} ·{' '}
+            {data.date_range.min_date ?? 'n/a'} → {data.date_range.max_date ?? 'n/a'} ·{' '}
+            {data.counts.events?.toLocaleString() ?? 0} event intervals
+          </Typography.Text>
+        </div>
+        <Space>
+          <Button icon={<DownloadOutlined />} onClick={() => exportReport('md')}>
+            Export Markdown
+          </Button>
+          <Button icon={<DownloadOutlined />} onClick={() => exportReport('csv')}>
+            Export CSV
+          </Button>
+        </Space>
       </div>
 
       <Row gutter={[12, 12]}>
@@ -144,7 +187,13 @@ export default function ReportPage() {
           <Col xs={12} sm={8} xl={4} key={item.label}>
             <Card
               size="small"
-              title={<Typography.Text type="secondary">{item.label}</Typography.Text>}
+              title={
+                <Tooltip title={HEADLINE_DEFINITIONS[item.label]}>
+                  <Typography.Text type="secondary" style={{ cursor: 'help' }}>
+                    {item.label} <InfoCircleOutlined style={{ fontSize: 11 }} />
+                  </Typography.Text>
+                </Tooltip>
+              }
             >
               <Statistic value={item.value} valueStyle={{ fontSize: 22 }} />
               <Typography.Text type="secondary" style={{ fontSize: 11 }}>

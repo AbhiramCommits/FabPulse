@@ -1,0 +1,38 @@
+section,item,detail,value
+headline,Uptime,Productive time across 12 tools and 90 operational days.,86.7%
+headline,Availability (OEE),Productive time over planned production time (scheduled maintenance excluded).,87.2%
+headline,MTBF,328 unscheduled failure episodes observed.,68.2 h
+headline,MTTR,306.2 h of unplanned downtime.,0.93 h
+headline,Throughput p50,p95 is 57.9 wph across tool-days.,43.4 wph
+headline,Yield,Mean daily yield ± one standard deviation across tool-days.,98.61% ± 0.59
+summary,finding,"Across 12 tools over 90 operational days (Aug 21, 2026 to Nov 18, 2026), the fleet ran at 86.7% uptime with 328 unscheduled failures, MTBF 68.2 h and MTTR 0.93 h.",
+summary,finding,"Fleet throughput averaged 42.6 wafers/hour (median 43.4, p95 57.9), while yield averaged 98.61% ± 0.59 across tool-days.",
+summary,finding,"Tool TRACK-04 throughput averaged 43.3 wph over 90 days, 1.5% above the fleet mean; 7 of 90 days fell below the lower control limit (3σ), bottoming at 30.9 wph (-3.45σ) on Nov 05, 2026 (p < 0.001).",
+summary,finding,"Tool SCANNER-02 yield averaged 98.47% over 90 days, 0.1% below the fleet mean; 5 of 90 days fell below the lower control limit (3σ), bottoming at 92.63% (-4.22σ) on Oct 26, 2026 (p < 0.001).",
+summary,finding,"Tool TRACK-02 yield averaged 98.00% over 90 days, 0.6% below the fleet mean; 1 of 90 days fell below the lower control limit (3σ), bottoming at 97.90% (-3.49σ) on Nov 12, 2026.",
+summary,finding,"9 of 15 fault codes account for 80% of 7,191 fault events; VAC_LOSS leads with 1,219 events (17.0%).",
+summary,finding,"The largest handoff effect is C→A on SCANNER-02: higher by 8.6% (53.9 → 58.5), p < 0.001.",
+excursion,#1 TRACK-04 throughput_wph,"Tool TRACK-04 throughput averaged 43.3 wph over 90 days, 1.5% above the fleet mean; 7 of 90 days fell below the lower control limit (3σ), bottoming at 30.9 wph (-3.45σ) on Nov 05, 2026 (p < 0.001).",CRITICAL
+excursion,#2 SCANNER-02 yield_pct,"Tool SCANNER-02 yield averaged 98.47% over 90 days, 0.1% below the fleet mean; 5 of 90 days fell below the lower control limit (3σ), bottoming at 92.63% (-4.22σ) on Oct 26, 2026 (p < 0.001).",CRITICAL
+excursion,#3 TRACK-02 yield_pct,"Tool TRACK-02 yield averaged 98.00% over 90 days, 0.6% below the fleet mean; 1 of 90 days fell below the lower control limit (3σ), bottoming at 97.90% (-3.49σ) on Nov 12, 2026.",HIGH
+pareto,VAC_LOSS,Vacuum / HIGH,"1219 events (17.0%, cumulative 17.0%)"
+pareto,RF_REFLECT,RF Power / HIGH,"895 events (12.4%, cumulative 29.4%)"
+pareto,SENSOR_NOISE,Instrumentation / LOW,"667 events (9.3%, cumulative 38.7%)"
+pareto,TEMP_DRIFT,Thermal / MEDIUM,"627 events (8.7%, cumulative 47.4%)"
+pareto,GAS_FLOW,Gas Delivery / HIGH,"588 events (8.2%, cumulative 55.6%)"
+pareto,PARTICLE,Contamination / MEDIUM,"538 events (7.5%, cumulative 63.1%)"
+pareto,EDGE_BEAD,Coating / LOW,"469 events (6.5%, cumulative 69.6%)"
+pareto,CHUCK_CLAMP,Wafer Handling / MEDIUM,"456 events (6.3%, cumulative 75.9%)"
+pareto,LITHO_ALIGN,Alignment / HIGH,"399 events (5.5%, cumulative 81.5%)"
+shift_delta,SCANNER-02 C->A,p=0.0,+8.6%
+shift_delta,METRO-01 C->A,p=0.0,+8.6%
+shift_delta,METRO-02 C->A,p=0.0,+8.6%
+shift_delta,SCANNER-01 C->A,p=0.0,+8.6%
+shift_delta,METRO-03 C->A,p=0.0,+8.5%
+glossary,UCL / LCL,"Upper and lower control limits, drawn at the process mean ± 3 standard deviations; a point outside them is unlikely under stable random variation.",
+glossary,MTBF,Mean time between failures: productive hours divided by the number of unscheduled-down episodes.,
+glossary,MTTR,Mean time to repair: total unscheduled-down hours divided by the number of unscheduled-down episodes.,
+glossary,IQR,"Interquartile range, the distance between the 25th and 75th percentiles; Tukey outliers lie beyond 1.5×IQR from the box.",
+glossary,p-value,The probability of seeing a difference at least this large if nothing real changed; below 0.05 is conventionally called significant.,
+glossary,Availability (OEE),"Productive time divided by planned production time, excluding scheduled maintenance but including standby, engineering and unplanned downtime.",
+glossary,Rolling mean,"The average of a metric over a trailing window of days, used to separate signal from day-to-day noise.",

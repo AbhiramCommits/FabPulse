@@ -7,7 +7,7 @@ import {
   Space,
   Tooltip,
   Typography,
-  message,
+  App as AntdApp,
   theme as antdTheme,
 } from 'antd'
 import {
@@ -75,6 +75,7 @@ export default function AppLayout() {
   const { mode, toggle } = useTheme()
   const meta = useMeta()
   const { token } = antdTheme.useToken()
+  const { message } = AntdApp.useApp()
   const navigate = useNavigate()
   const location = useLocation()
   const screens = useBreakpoint()

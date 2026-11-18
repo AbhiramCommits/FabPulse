@@ -155,6 +155,12 @@ def _rank_excursions(
             continue
         worst = min(ooc, key=lambda item: item["deviation_sigma"]) if ooc else None
         worst_sigma = float(worst["deviation_sigma"]) if worst else 0.0
+        worst_side = "above" if worst_sigma > 0 else "below"
+        side_ooc = [
+            item
+            for item in ooc
+            if (item["deviation_sigma"] > 0) == (worst_sigma > 0)
+        ]
         mean = float(np.mean(values))
         pct_vs_fleet = ((mean - fleet_mean) / fleet_mean * 100.0) if fleet_mean else None
         ooc_dates = [item["date"] for item in ooc]
@@ -165,20 +171,20 @@ def _rank_excursions(
             ]
             p_value = stats.welch_t_test(ooc_values, rest_values)["p_value"]
             start_date, end_date = min(ooc_dates), max(ooc_dates)
-            direction = "below" if worst_sigma < 0 else "above"
+            p_text = f" ({_fmt_p(p_value)})" if p_value is not None else ""
             sentence = (
                 f"Tool {tool_id} {label} averaged {mean:,.{digits}f}{unit} over "
                 f"{len(values)} days, {abs(pct_vs_fleet):.1f}% "
                 f"{'below' if (pct_vs_fleet or 0) < 0 else 'above'} the fleet mean; "
-                f"{len(ooc)} of {len(values)} days fell {direction} the "
-                f"{'lower' if direction == 'below' else 'upper'} control limit (3σ), "
-                f"{'bottoming' if direction == 'below' else 'peaking'} at "
+                f"{len(side_ooc)} of {len(values)} days fell {worst_side} the "
+                f"{'lower' if worst_side == 'below' else 'upper'} control limit (3σ), "
+                f"{'bottoming' if worst_side == 'below' else 'peaking'} at "
                 f"{worst['value']:,.{digits}f}{unit} ({worst_sigma:+.2f}σ) on "
-                f"{_pretty_date(worst['date'])} ({_fmt_p(p_value)})."
+                f"{_pretty_date(worst['date'])}{p_text}."
             )
             detail = (
                 f"{len(violations)} run-rule violations alongside {len(ooc)} "
-                f"out-of-control days; the excursion spans "
+                f"out-of-control days in total; the excursion spans "
                 f"{_pretty_date(start_date)} to {_pretty_date(end_date)}."
             )
         else:

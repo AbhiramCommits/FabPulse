@@ -800,7 +800,7 @@
         "type": "object"
       },
       "KpisResponse": {
-        "description": "Fleet and per-tool KPIs for the current filters.",
+        "description": "Fleet and per-tool KPIs for the current filters.\n\n``tools`` is one server-side page; ``tools_total`` powers Ant Design's\npagination control without shipping the whole fleet to the browser.",
         "properties": {
           "filters": {
             "$ref": "#/components/schemas/FilterEcho"
@@ -814,6 +814,26 @@
                 "type": "null"
               }
             ]
+          },
+          "page": {
+            "default": 1,
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "default": 10,
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "sort_by": {
+            "default": "tool_id",
+            "title": "Sort By",
+            "type": "string"
+          },
+          "sort_dir": {
+            "default": "asc",
+            "title": "Sort Dir",
+            "type": "string"
           },
           "throughput_p50": {
             "anyOf": [
@@ -843,6 +863,11 @@
             },
             "title": "Tools",
             "type": "array"
+          },
+          "tools_total": {
+            "default": 0,
+            "title": "Tools Total",
+            "type": "integer"
           }
         },
         "required": [
@@ -2145,9 +2170,53 @@
     },
     "/api/kpis": {
       "get": {
-        "description": "Return fleet and per-tool availability, MTBF/MTTR and throughput KPIs.",
+        "description": "Return fleet KPIs and a server-paged, server-sorted slice of tool KPIs.",
         "operationId": "kpis_api_kpis_get",
         "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "required": false,
+            "schema": {
+              "default": "tool_id",
+              "title": "Sort By",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort_dir",
+            "required": false,
+            "schema": {
+              "default": "asc",
+              "pattern": "^(asc|desc)$",
+              "title": "Sort Dir",
+              "type": "string"
+            }
+          },
           {
             "description": "Inclusive operational start date",
             "in": "query",

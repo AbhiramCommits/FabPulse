@@ -126,10 +126,19 @@ class ToolKpi(BaseModel):
 
 
 class KpisResponse(BaseModel):
-    """Fleet and per-tool KPIs for the current filters."""
+    """Fleet and per-tool KPIs for the current filters.
+
+    ``tools`` is one server-side page; ``tools_total`` powers Ant Design's
+    pagination control without shipping the whole fleet to the browser.
+    """
 
     fleet: FleetKpi | None
     tools: list[ToolKpi]
+    tools_total: int = 0
+    page: int = 1
+    page_size: int = 10
+    sort_by: str = "tool_id"
+    sort_dir: str = "asc"
     throughput_p50: float | None = None
     throughput_p95: float | None = None
     filters: FilterEcho

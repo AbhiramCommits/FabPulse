@@ -115,6 +115,11 @@ export interface ToolKpi {
 export interface KpisResponse {
   fleet: FleetKpi | null
   tools: ToolKpi[]
+  tools_total: number
+  page: number
+  page_size: number
+  sort_by: string
+  sort_dir: 'asc' | 'desc'
   throughput_p50: number | null
   throughput_p95: number | null
   filters: FilterEcho

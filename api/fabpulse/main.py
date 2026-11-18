@@ -181,13 +181,58 @@ def filter_options() -> FilterOptionsResponse:
     )
 
 
+KPI_SORT_COLUMNS = {
+    "tool_id",
+    "tool_family",
+    "fab_site",
+    "uptime_pct",
+    "availability_pct",
+    "mtbf_hours",
+    "mttr_hours",
+    "failure_episodes",
+    "avg_throughput_wph",
+    "avg_yield_pct",
+    "productive_hours",
+    "wafers",
+}
+
+
 @app.get("/api/kpis", response_model=KpisResponse, tags=["analytics"])
-def kpis(params: FilterDep) -> KpisResponse:
-    """Return fleet and per-tool availability, MTBF/MTTR and throughput KPIs."""
+def kpis(
+    params: FilterDep,
+    page: Annotated[int, Query(ge=1)] = 1,
+    page_size: Annotated[int, Query(ge=1, le=100)] = 10,
+    sort_by: Annotated[str, Query()] = "tool_id",
+    sort_dir: Annotated[str, Query(pattern="^(asc|desc)$")] = "asc",
+) -> KpisResponse:
+    """Return fleet KPIs and a server-paged, server-sorted slice of tool KPIs."""
+    if sort_by not in KPI_SORT_COLUMNS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"sort_by must be one of: {', '.join(sorted(KPI_SORT_COLUMNS))}",
+        )
     data = stats.availability_kpis(params.to_filters())
+    tools = list(data["tools"])
+
+    def sort_value(tool: dict) -> object:
+        value = tool.get(sort_by)
+        if isinstance(value, str):
+            return value.lower()
+        if value is None:
+            return float("inf") if sort_dir == "asc" else float("-inf")
+        return float(value)
+
+    tools.sort(key=sort_value, reverse=sort_dir == "desc")
+    total = len(tools)
+    start = (page - 1) * page_size
     return KpisResponse(
         fleet=data["fleet"],
-        tools=data["tools"],
+        tools=tools[start : start + page_size],
+        tools_total=total,
+        page=page,
+        page_size=page_size,
+        sort_by=sort_by,
+        sort_dir=sort_dir,
         throughput_p50=data["throughput_p50"],
         throughput_p95=data["throughput_p95"],
         filters=params.echo(),

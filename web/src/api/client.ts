@@ -106,14 +106,34 @@ export interface EventOptions {
   sortDir?: 'asc' | 'desc'
 }
 
+export interface KpiOptions {
+  page?: number
+  pageSize?: number
+  sortBy?: string
+  sortDir?: 'asc' | 'desc'
+}
+
 export const api = {
   health: (signal?: AbortSignal) => apiGet<HealthResponse>('/api/health', { signal }),
 
   filterOptions: (signal?: AbortSignal) =>
     apiGet<FilterOptionsResponse>('/api/meta/filters', { signal }),
 
-  kpis: (filters: FilterState, signal?: AbortSignal) =>
-    apiGet<KpisResponse>('/api/kpis', { params: filterParams(filters), signal }),
+  kpis: (
+    filters: FilterState,
+    options: KpiOptions = {},
+    signal?: AbortSignal,
+  ) =>
+    apiGet<KpisResponse>('/api/kpis', {
+      params: {
+        ...filterParams(filters),
+        page: options.page ?? 1,
+        page_size: options.pageSize ?? 10,
+        sort_by: options.sortBy ?? 'tool_id',
+        sort_dir: options.sortDir ?? 'asc',
+      },
+      signal,
+    }),
 
   timeseries: (
     filters: FilterState,
